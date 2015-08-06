@@ -21,8 +21,8 @@ describe('clone', function() {
   });
 
   it('should throw an error on wrong number of arguments', function() {
-    assert.throws (function () {math.clone()}, error.ArgumentsError);
-    assert.throws (function () {math.clone(2, 4)}, error.ArgumentsError);
+    assert.throws (function () {math.clone()}, /TypeError: Too few arguments/);
+    assert.throws (function () {math.clone(2, 4)}, /TypeError: Too many arguments/);
   });
 
   it('should clone a bignumber', function() {
@@ -54,6 +54,12 @@ describe('clone', function() {
     a.value = 10;
     assert.equal(a.toString(), '10 m');
     assert.equal(b.toString(), '5 mm');
+  });
+
+  it('should clone a fraction', function() {
+    var a = math.fraction(2,3);
+    var b = math.clone(a);
+    assert.deepEqual(a, b);
   });
 
   it('should clone an array', function() {
