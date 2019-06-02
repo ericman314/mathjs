@@ -151,7 +151,7 @@ describe('divide', function () {
     assert.strictEqual(divide(math.unit('gal'), math.unit('L')).toString(), 'gal / L')
   })
 
-  it('should divide units by a big number', function () {
+  it.only('should divide units by a big number', function () {
     assert.strictEqual(divide(math.unit('5 m'), bignumber(10)).toString(), '0.5 m')
     assert.strictEqual(divide(bignumber(80), math.unit('day')).format({ precision: 50 }), '9.2592592592592592592592592592592592592592592592593e-4 Hz')
     assert.strictEqual(divide(bignumber(80), math.unit('1 day')).format({ precision: 50 }), '9.2592592592592592592592592592592592592592592592593e-4 Hz')

@@ -2,9 +2,9 @@ import { factory } from '../../utils/factory'
 import { typeOf } from '../../utils/is'
 
 const name = 'divideScalar'
-const dependencies = ['typed', 'numeric']
+const dependencies = ['typed', 'numeric', 'Unit']
 
-export const createDivideScalar = /* #__PURE__ */ factory(name, dependencies, ({ typed, numeric }) => {
+export const createDivideScalar = /* #__PURE__ */ factory(name, dependencies, ({ typed, numeric, Unit }) => {
   /**
    * Divide two scalar values, `x / y`.
    * This function is meant for internal use: it is used by the public functions
@@ -37,19 +37,20 @@ export const createDivideScalar = /* #__PURE__ */ factory(name, dependencies, ({
     'Unit, number | Fraction | BigNumber': function (x, y) {
       // TODO: move the divide function to Unit.js, it uses internals of Unit
       const one = numeric(1, typeOf(y))
-      const res = x.setValue(divideScalar(((x.value === null) ? one : x.value), y))
-      return res
+      return Unit(divideScalar(((x.value === null) ? one : x.value)), xInv.unitString())
     },
 
     'number | Fraction | BigNumber, Unit': function (x, y) {
       let yInv = y.pow(-1)
       // TODO: move the divide function to Unit.js, it uses internals of Unit
       const one = numeric(1, typeOf(x))
-      const res = yInv.setValue(divideScalar(x, ((y.value === null) ? one : y.value)))
-      return res
+      return Unit(divideScalar(x, ((y.value === null) ? one : y.value)), yInv.unitString())
     },
 
     'Unit, Unit': function (x, y) {
+      console.log('divide(Unit, Unit)')
+      console.log(x)
+      console.log(y)
       return x.div(y)
     }
   })

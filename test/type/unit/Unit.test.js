@@ -163,7 +163,17 @@ describe('Unit', function () {
     })
 
     it('should test whether a Complex unit and a unit with a number are equal', function () {
-      assert.strictEqual(new math.Unit(math.complex(3, 0), 'km').equals(new math.Unit(3000, 'm')), true)
+      console.log('CONSTRUCTING u1')
+      let u1 = Unit(math.complex(3, 0), 'km')
+      console.log('AFTER CONSTRUCTING:')
+      console.log(u1.to('m').toString())
+
+      console.log('CONSTRUCTING u2')
+      let u2 = Unit(3000, 'm')
+      console.log('AFTER CONSTRUCTING:')
+      console.log(u2.toString())
+
+      assert.strictEqual(u1.equals(u2), true)
       assert.strictEqual(new math.Unit(math.complex(3, 4), 'km').equals(new math.Unit(3000, 'm')), false)
     })
   })
@@ -286,8 +296,8 @@ describe('Unit', function () {
     it('should convert a Complex unit', function () {
       const u1 = new Unit(math.complex(300, 400), 'kPa')
       const u2 = u1.to('lbf/in^2')
-      approx.deepEqual(u2.value, math.complex(43.511321319062766, 58.01509509208368))
       assert.deepStrictEqual(u2.toString(), '(43.511321319062766 + 58.01509509208368i) lbf / in^2')
+      approx.deepEqual(u2.value, math.complex(43.511321319062766, 58.01509509208368))
     })
 
     it('should convert a unit to a fixed unit', function () {
