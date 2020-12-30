@@ -1,13 +1,13 @@
-import { isBigNumber, isCollection, isNumber } from '../../utils/is'
-import { factory } from '../../utils/factory'
-import { errorTransform } from './utils/errorTransform'
-import { createMax } from '../../function/statistics/max'
+import { isBigNumber, isCollection, isNumber } from '../../utils/is.js'
+import { factory } from '../../utils/factory.js'
+import { errorTransform } from './utils/errorTransform.js'
+import { createMax } from '../../function/statistics/max.js'
 
 const name = 'max'
-const dependencies = ['typed', 'larger']
+const dependencies = ['typed', 'config', 'numeric', 'larger']
 
-export const createMaxTransform = /* #__PURE__ */ factory(name, dependencies, ({ typed, larger }) => {
-  const max = createMax({ typed, larger })
+export const createMaxTransform = /* #__PURE__ */ factory(name, dependencies, ({ typed, config, numeric, larger }) => {
+  const max = createMax({ typed, config, numeric, larger })
 
   /**
    * Attach a transform function to math.max

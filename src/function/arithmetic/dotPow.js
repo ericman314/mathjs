@@ -1,10 +1,10 @@
-import { factory } from '../../utils/factory'
-import { createAlgorithm03 } from '../../type/matrix/utils/algorithm03'
-import { createAlgorithm07 } from '../../type/matrix/utils/algorithm07'
-import { createAlgorithm11 } from '../../type/matrix/utils/algorithm11'
-import { createAlgorithm12 } from '../../type/matrix/utils/algorithm12'
-import { createAlgorithm13 } from '../../type/matrix/utils/algorithm13'
-import { createAlgorithm14 } from '../../type/matrix/utils/algorithm14'
+import { factory } from '../../utils/factory.js'
+import { createAlgorithm03 } from '../../type/matrix/utils/algorithm03.js'
+import { createAlgorithm07 } from '../../type/matrix/utils/algorithm07.js'
+import { createAlgorithm11 } from '../../type/matrix/utils/algorithm11.js'
+import { createAlgorithm12 } from '../../type/matrix/utils/algorithm12.js'
+import { createAlgorithm13 } from '../../type/matrix/utils/algorithm13.js'
+import { createAlgorithm14 } from '../../type/matrix/utils/algorithm14.js'
 
 const name = 'dotPow'
 const dependencies = [
@@ -46,7 +46,7 @@ export const createDotPow = /* #__PURE__ */ factory(name, dependencies, ({ typed
    * @param  {number | BigNumber | Complex | Unit | Array | Matrix} y  The exponent
    * @return {number | BigNumber | Complex | Unit | Array | Matrix}                     The value of `x` to the power `y`
    */
-  const dotPow = typed(name, {
+  return typed(name, {
 
     'any, any': pow,
 
@@ -68,45 +68,43 @@ export const createDotPow = /* #__PURE__ */ factory(name, dependencies, ({ typed
 
     'Array, Array': function (x, y) {
       // use matrix implementation
-      return dotPow(matrix(x), matrix(y)).valueOf()
+      return this(matrix(x), matrix(y)).valueOf()
     },
 
     'Array, Matrix': function (x, y) {
       // use matrix implementation
-      return dotPow(matrix(x), y)
+      return this(matrix(x), y)
     },
 
     'Matrix, Array': function (x, y) {
       // use matrix implementation
-      return dotPow(x, matrix(y))
+      return this(x, matrix(y))
     },
 
     'SparseMatrix, any': function (x, y) {
-      return algorithm11(x, y, dotPow, false)
+      return algorithm11(x, y, this, false)
     },
 
     'DenseMatrix, any': function (x, y) {
-      return algorithm14(x, y, dotPow, false)
+      return algorithm14(x, y, this, false)
     },
 
     'any, SparseMatrix': function (x, y) {
-      return algorithm12(y, x, dotPow, true)
+      return algorithm12(y, x, this, true)
     },
 
     'any, DenseMatrix': function (x, y) {
-      return algorithm14(y, x, dotPow, true)
+      return algorithm14(y, x, this, true)
     },
 
     'Array, any': function (x, y) {
       // use matrix implementation
-      return algorithm14(matrix(x), y, dotPow, false).valueOf()
+      return algorithm14(matrix(x), y, this, false).valueOf()
     },
 
     'any, Array': function (x, y) {
       // use matrix implementation
-      return algorithm14(matrix(y), x, dotPow, true).valueOf()
+      return algorithm14(matrix(y), x, this, true).valueOf()
     }
   })
-
-  return dotPow
 })

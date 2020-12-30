@@ -1,9 +1,9 @@
 import assert from 'assert'
-import mathjs from '../../../src/bundleAny'
-import approx from '../../../tools/approx'
-import { factory } from '../../../src/utils/factory'
-import { create } from '../../../src/core/create'
-import { hasOwnProperty } from '../../../src/utils/object'
+import mathjs from '../../../src/defaultInstance.js'
+import approx from '../../../tools/approx.js'
+import { factory } from '../../../src/utils/factory.js'
+import { create } from '../../../src/core/create.js'
+import { hasOwnProperty } from '../../../src/utils/object.js'
 
 const multiplyTestFactory = factory('multiplyTest', [], () => {
   return function multiply (a, b) {
@@ -257,85 +257,6 @@ describe('import', function () {
     assert.strictEqual(math.mean, mean)
     assert.strictEqual(math.expression.transform.mean, undefined)
     assert.strictEqual(math.expression.mathWithTransform.mean, mean)
-  })
-
-  describe('legacy factory', function () {
-    const originalConsoleWarn = console.warn
-
-    before(() => {
-      console.warn = (...args) => {
-        // ignore warnings about legacy factories
-        if (args.join(', ').indexOf('Factories of type { name, factory } are deprecated') === -1) {
-          console.warn('Unexpected warning!')
-          originalConsoleWarn.apply(console, args)
-        }
-      }
-    })
-
-    after(() => {
-      console.warn = originalConsoleWarn
-    })
-
-    it('should merge typed functions coming from a legacy factory', function () {
-      math.import({
-        foo: math.typed('foo', {
-          number: function (x) {
-            return 'foo(number)'
-          }
-        })
-      })
-
-      math.import({
-        name: 'foo',
-        factory: function () {
-          return math.typed('foo', {
-            string: function (x) {
-              return 'foo(string)'
-            }
-          })
-        }
-      })
-
-      assert.deepStrictEqual(Object.keys(math.foo.signatures).sort(), ['number', 'string'])
-      assert.strictEqual(math.foo(2), 'foo(number)')
-      assert.strictEqual(math.foo('bar'), 'foo(string)')
-      assert.throws(function () {
-        math.foo(new Date())
-      }, /TypeError: Unexpected type of argument in function foo/)
-    })
-
-    it('should override a function with transform for a legacy factory function without', function () {
-      function mean () {
-        return 'test'
-      }
-
-      const meanFactory = {
-        name: 'mean',
-        factory: () => mean
-      }
-
-      math.import([meanFactory], { override: true })
-
-      assert(hasOwnProperty(math, 'mean'))
-      assert.strictEqual(math.mean, mean)
-      assert.strictEqual(math.expression.transform.mean, undefined)
-      assert.strictEqual(math.expression.mathWithTransform.mean, mean)
-    })
-
-    it('should throw an error when a legacy factory function has a transform', function () {
-      assert.throws(function () {
-        math.import({
-          name: 'foo2',
-          factory: function () {
-            const fn = function () {}
-            fn.transform = function () {}
-            return fn
-          }
-        })
-
-        math.foo2() // as soon as we use it, it will resolve the factory function
-      }, /Transforms cannot be attached to factory functions/)
-    })
   })
 
   describe('factory', () => {

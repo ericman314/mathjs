@@ -1,6 +1,6 @@
-import { factory } from '../../utils/factory'
-import { clone } from '../../utils/object'
-import { validateIndex } from '../../utils/array'
+import { factory } from '../../utils/factory.js'
+import { clone } from '../../utils/object.js'
+import { validateIndex } from '../../utils/array.js'
 
 const name = 'column'
 const dependencies = ['typed', 'Index', 'matrix', 'range']
@@ -17,7 +17,7 @@ export const createColumn = /* #__PURE__ */ factory(name, dependencies, ({ typed
    *
    *     // get a column
    *     const d = [[1, 2], [3, 4]]
-   *     math.column(d, 1) // returns [2, 4]
+   *     math.column(d, 1) // returns [[2], [4]]
    *
    * See also:
    *
@@ -27,15 +27,13 @@ export const createColumn = /* #__PURE__ */ factory(name, dependencies, ({ typed
    * @param {number} column           The index of the column
    * @return {Array | Matrix}         The retrieved column
    */
-  const column = typed(name, {
+  return typed(name, {
     'Matrix, number': _column,
 
     'Array, number': function (value, column) {
       return _column(matrix(clone(value)), column).valueOf()
     }
   })
-
-  return column
 
   /**
    * Retrieve a column of a matrix

@@ -1,6 +1,6 @@
-import { factory } from '../../utils/factory'
-import { deepMap } from '../../utils/collection'
-import { expm1Number } from '../../plain/number'
+import { factory } from '../../utils/factory.js'
+import { deepMap } from '../../utils/collection.js'
+import { expm1Number } from '../../plain/number/index.js'
 
 const name = 'expm1'
 const dependencies = ['typed', 'Complex']
@@ -34,7 +34,7 @@ export const createExpm1 = /* #__PURE__ */ factory(name, dependencies, ({ typed,
    * @param {number | BigNumber | Complex | Array | Matrix} x  A number or matrix to apply expm1
    * @return {number | BigNumber | Complex | Array | Matrix} Exponent of `x`
    */
-  const expm1 = typed(name, {
+  return typed(name, {
     number: expm1Number,
 
     Complex: function (x) {
@@ -50,9 +50,7 @@ export const createExpm1 = /* #__PURE__ */ factory(name, dependencies, ({ typed,
     },
 
     'Array | Matrix': function (x) {
-      return deepMap(x, expm1)
+      return deepMap(x, this)
     }
   })
-
-  return expm1
 })

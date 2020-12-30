@@ -1,11 +1,11 @@
-import { factory } from '../../utils/factory'
-import { createAlgorithm02 } from '../../type/matrix/utils/algorithm02'
-import { createAlgorithm03 } from '../../type/matrix/utils/algorithm03'
-import { createAlgorithm07 } from '../../type/matrix/utils/algorithm07'
-import { createAlgorithm11 } from '../../type/matrix/utils/algorithm11'
-import { createAlgorithm12 } from '../../type/matrix/utils/algorithm12'
-import { createAlgorithm13 } from '../../type/matrix/utils/algorithm13'
-import { createAlgorithm14 } from '../../type/matrix/utils/algorithm14'
+import { factory } from '../../utils/factory.js'
+import { createAlgorithm02 } from '../../type/matrix/utils/algorithm02.js'
+import { createAlgorithm03 } from '../../type/matrix/utils/algorithm03.js'
+import { createAlgorithm07 } from '../../type/matrix/utils/algorithm07.js'
+import { createAlgorithm11 } from '../../type/matrix/utils/algorithm11.js'
+import { createAlgorithm12 } from '../../type/matrix/utils/algorithm12.js'
+import { createAlgorithm13 } from '../../type/matrix/utils/algorithm13.js'
+import { createAlgorithm14 } from '../../type/matrix/utils/algorithm14.js'
 
 const name = 'dotDivide'
 const dependencies = [
@@ -51,7 +51,7 @@ export const createDotDivide = /* #__PURE__ */ factory(name, dependencies, ({ ty
    * @param  {number | BigNumber | Fraction | Complex | Unit | Array | Matrix} y Denominator
    * @return {number | BigNumber | Fraction | Complex | Unit | Array | Matrix}                    Quotient, `x ./ y`
    */
-  const dotDivide = typed(name, {
+  return typed(name, {
 
     'any, any': divideScalar,
 
@@ -73,17 +73,17 @@ export const createDotDivide = /* #__PURE__ */ factory(name, dependencies, ({ ty
 
     'Array, Array': function (x, y) {
       // use matrix implementation
-      return dotDivide(matrix(x), matrix(y)).valueOf()
+      return this(matrix(x), matrix(y)).valueOf()
     },
 
     'Array, Matrix': function (x, y) {
       // use matrix implementation
-      return dotDivide(matrix(x), y)
+      return this(matrix(x), y)
     },
 
     'Matrix, Array': function (x, y) {
       // use matrix implementation
-      return dotDivide(x, matrix(y))
+      return this(x, matrix(y))
     },
 
     'SparseMatrix, any': function (x, y) {
@@ -112,6 +112,4 @@ export const createDotDivide = /* #__PURE__ */ factory(name, dependencies, ({ ty
       return algorithm14(matrix(y), x, divideScalar, true).valueOf()
     }
   })
-
-  return dotDivide
 })

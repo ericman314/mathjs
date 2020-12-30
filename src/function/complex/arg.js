@@ -1,5 +1,5 @@
-import { factory } from '../../utils/factory'
-import { deepMap } from '../../utils/collection'
+import { factory } from '../../utils/factory.js'
+import { deepMap } from '../../utils/collection.js'
 
 const name = 'arg'
 const dependencies = ['typed']
@@ -32,7 +32,7 @@ export const createArg = /* #__PURE__ */ factory(name, dependencies, ({ typed })
    *            A complex number or array with complex numbers
    * @return {number | BigNumber | Array | Matrix} The argument of x
    */
-  const arg = typed(name, {
+  return typed(name, {
     number: function (x) {
       return Math.atan2(0, x)
     },
@@ -48,9 +48,7 @@ export const createArg = /* #__PURE__ */ factory(name, dependencies, ({ typed })
     // TODO: implement BigNumber support for function arg
 
     'Array | Matrix': function (x) {
-      return deepMap(x, arg)
+      return deepMap(x, this)
     }
   })
-
-  return arg
 })

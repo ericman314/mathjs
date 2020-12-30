@@ -1,13 +1,13 @@
-import { isBigNumber, isCollection, isNumber } from '../../utils/is'
-import { factory } from '../../utils/factory'
-import { errorTransform } from './utils/errorTransform'
-import { createMin } from '../../function/statistics/min'
+import { isBigNumber, isCollection, isNumber } from '../../utils/is.js'
+import { factory } from '../../utils/factory.js'
+import { errorTransform } from './utils/errorTransform.js'
+import { createMin } from '../../function/statistics/min.js'
 
 const name = 'min'
-const dependencies = ['typed', 'smaller']
+const dependencies = ['typed', 'config', 'numeric', 'smaller']
 
-export const createMinTransform = /* #__PURE__ */ factory(name, dependencies, ({ typed, smaller }) => {
-  const min = createMin({ typed, smaller })
+export const createMinTransform = /* #__PURE__ */ factory(name, dependencies, ({ typed, config, numeric, smaller }) => {
+  const min = createMin({ typed, config, numeric, smaller })
 
   /**
    * Attach a transform function to math.min

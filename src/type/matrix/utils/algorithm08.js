@@ -1,5 +1,5 @@
-import { factory } from '../../../utils/factory'
-import { DimensionError } from '../../../error/DimensionError'
+import { factory } from '../../../utils/factory.js'
+import { DimensionError } from '../../../error/DimensionError.js'
 
 const name = 'algorithm08'
 const dependencies = ['typed', 'equalScalar']
@@ -75,14 +75,6 @@ export const createAlgorithm08 = /* #__PURE__ */ factory(name, dependencies, ({ 
     const cvalues = []
     const cindex = []
     const cptr = []
-    // matrix
-    const c = a.createSparseMatrix({
-      values: cvalues,
-      index: cindex,
-      ptr: cptr,
-      size: [rows, columns],
-      datatype: dt
-    })
 
     // workspace
     const x = []
@@ -143,6 +135,12 @@ export const createAlgorithm08 = /* #__PURE__ */ factory(name, dependencies, ({ 
     cptr[columns] = cindex.length
 
     // return sparse matrix
-    return c
+    return a.createSparseMatrix({
+      values: cvalues,
+      index: cindex,
+      ptr: cptr,
+      size: [rows, columns],
+      datatype: dt
+    })
   }
 })

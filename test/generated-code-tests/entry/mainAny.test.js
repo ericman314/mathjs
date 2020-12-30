@@ -1,7 +1,7 @@
 import assert from 'assert'
-import * as mainAny from '../../../src/entry/mainAny'
-import * as factoriesAny from '../../../src/factoriesAny'
-import { createSnapshotFromFactories, validateBundle, validateTypeOf } from '../../../src/utils/snapshot'
+import * as mainAny from '../../../src/entry/mainAny.js'
+import * as factoriesAny from '../../../src/factoriesAny.js'
+import { createSnapshotFromFactories, validateBundle, validateTypeOf } from '../../../src/utils/snapshot.js'
 const { create, all, add, matrix, isObject, isMatrix, pi, speedOfLight, sqrt, evaluate, chain, reviver, Complex, addDependencies } = mainAny
 
 const {
@@ -24,17 +24,7 @@ describe('mainAny', function () {
     // snapshot testing
     const newMathInstance = create(all)
 
-    // don't output all deprecation warnings "math.foo.bar is move to math.bar, ..."
-    const originalWarn = console.warn
-    console.warn = (...args) => {
-      if (args.join(' ').indexOf('is moved to') === -1) {
-        originalWarn.apply(console, args)
-      }
-    }
-
     validateBundle(expectedInstanceStructure, newMathInstance)
-
-    console.warn = originalWarn
   })
 
   it('new instance should import all factory functions via import', function () {
@@ -43,17 +33,7 @@ describe('mainAny', function () {
 
     newMathInstance.import(all)
 
-    // don't output all deprecation warnings "math.foo.bar is move to math.bar, ..."
-    const originalWarn = console.warn
-    console.warn = (...args) => {
-      if (args.join(' ').indexOf('is moved to') === -1) {
-        originalWarn.apply(console, args)
-      }
-    }
-
     validateBundle(expectedInstanceStructure, newMathInstance)
-
-    console.warn = originalWarn
   })
 
   it('new instance should import some factory functions via import', function () {

@@ -1,7 +1,7 @@
-import { factory } from '../../utils/factory'
-import { arraySize } from '../../utils/array'
-import { isMatrix } from '../../utils/is'
-import { IndexError } from '../../error/IndexError'
+import { factory } from '../../utils/factory.js'
+import { arraySize } from '../../utils/array.js'
+import { isMatrix } from '../../utils/is.js'
+import { IndexError } from '../../error/IndexError.js'
 
 const name = 'apply'
 const dependencies = ['typed', 'isInteger']
@@ -39,7 +39,7 @@ export const createApply = /* #__PURE__ */ factory(name, dependencies, ({ typed,
    *                                 return a number.
    * @return {Array | Matrix} res    The residual matrix with the function applied over some dimension.
    */
-  const apply = typed(name, {
+  return typed(name, {
     'Array | Matrix, number | BigNumber, function': function (mat, dim, callback) {
       if (!isInteger(dim)) {
         throw new TypeError('Integer number expected for dimension')
@@ -57,8 +57,6 @@ export const createApply = /* #__PURE__ */ factory(name, dependencies, ({ typed,
       }
     }
   })
-
-  return apply
 })
 
 /**

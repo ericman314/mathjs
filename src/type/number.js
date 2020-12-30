@@ -1,5 +1,5 @@
-import { factory } from '../utils/factory'
-import { deepMap } from '../utils/collection'
+import { factory } from '../utils/factory.js'
+import { deepMap } from '../utils/collection.js'
 
 const name = 'number'
 const dependencies = ['typed']
@@ -41,9 +41,17 @@ export const createNumber = /* #__PURE__ */ factory(name, dependencies, ({ typed
 
     string: function (x) {
       if (x === 'NaN') return NaN
-      const num = Number(x)
+      let num = Number(x)
       if (isNaN(num)) {
         throw new SyntaxError('String "' + x + '" is no valid number')
+      }
+      if (['0b', '0o', '0x'].includes(x.substring(0, 2))) {
+        if (num > 2 ** 32 - 1) {
+          throw new SyntaxError(`String "${x}" is out of range`)
+        }
+        if (num & 0x80000000) {
+          num = -1 * ~(num - 1)
+        }
       }
       return num
     },
@@ -69,9 +77,18 @@ export const createNumber = /* #__PURE__ */ factory(name, dependencies, ({ typed
     },
 
     'Array | Matrix': function (x) {
-      return deepMap(x, number)
+      return deepMap(x, this)
     }
   })
+
+  // reviver function to parse a JSON object like:
+  //
+  //     {"mathjs":"number","value":"2.3"}
+  //
+  // into a number 2.3
+  number.fromJSON = function (json) {
+    return parseFloat(json.value)
+  }
 
   return number
 })

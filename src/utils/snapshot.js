@@ -6,9 +6,9 @@
  * into ES5 code under /lib and can be used straight by node.js
  */
 import assert from 'assert'
-import * as allIsFunctions from './is'
-import { create } from '../core/create'
-import { endsWith } from './string'
+import * as allIsFunctions from './is.js'
+import { create } from '../core/create.js'
+import { endsWith } from './string.js'
 
 export function validateBundle (expectedBundleStructure, bundle) {
   const originalWarn = console.warn
@@ -145,14 +145,14 @@ export function createSnapshotFromFactories (factories) {
     'apply',
     'addScalar',
     'multiplyScalar',
-    'eye',
     'print',
     'divideScalar',
     'parse',
     'compile',
     'parser',
     'chain',
-    'reviver'
+    'reviver',
+    'replacer'
   ])
 
   const allTypeChecks = {}
@@ -176,9 +176,6 @@ export function createSnapshotFromFactories (factories) {
     once: 'Function',
     emit: 'Function',
     import: 'Function',
-    var: 'Function',
-    eval: 'Function',
-    typeof: 'Function',
     config: 'Function',
     create: 'Function',
     factory: 'Function',
@@ -197,35 +194,13 @@ export function createSnapshotFromFactories (factories) {
           'chain'
         ]),
         config: 'Function'
-      },
-      // deprecated stuff:
-      // docs: embeddedDocs,
-      node: {
-        ...allNodeClasses
-      },
-      parse: 'Function',
-      Parser: 'Function'
-    },
-
-    // deprecated stuff:
-    type: {
-      ...allTypeChecks,
-      ...allClasses
-    },
-    json: {
-      reviver: 'Function'
-    },
-    error: {
-      ...allErrorClasses
+      }
     }
   }
 
   const expectedES6Structure = {
     // functions
     ...exclude(allFunctionsConstantsClasses, [
-      'typeof',
-      'eval',
-      'var',
       'E',
       'false',
       'Infinity',
@@ -237,10 +212,6 @@ export function createSnapshotFromFactories (factories) {
     create: 'Function',
     config: 'Function',
     factory: 'Function',
-    deprecatedEval: 'Function',
-    deprecatedImport: 'Function',
-    deprecatedVar: 'Function',
-    deprecatedTypeof: 'Function',
     _true: 'boolean',
     _false: 'boolean',
     _null: 'null',
@@ -252,26 +223,7 @@ export function createSnapshotFromFactories (factories) {
     ...allDependencyCollections,
     ...allFactoryFunctions,
 
-    docs: embeddedDocs,
-
-    // deprecated stuff:
-    expression: {
-      node: {
-        ...allNodeClasses
-      },
-      parse: 'Function',
-      Parser: 'Function'
-    },
-    type: {
-      ...allTypeChecks,
-      ...allClasses
-    },
-    json: {
-      reviver: 'Function'
-    },
-    error: {
-      ...allErrorClasses
-    }
+    docs: embeddedDocs
   }
 
   return {

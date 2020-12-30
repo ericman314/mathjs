@@ -1,5 +1,5 @@
 import assert from 'assert'
-import math from '../../../../src/bundleAny'
+import math from '../../../../src/defaultInstance.js'
 const Matrix = math.Matrix
 const DenseMatrix = math.DenseMatrix
 const SparseMatrix = math.SparseMatrix
@@ -250,6 +250,17 @@ describe('DenseMatrix', function () {
       assert.strictEqual(m._data[1][1], 4)
       assert.strictEqual(m._datatype, 'number')
     })
+
+    it('should throw an error when size is not correct', function () {
+      const json = {
+        mathjs: 'DenseMatrix',
+        data: [[1, 2], [3, 4]],
+        size: [4, 2] // wrong size
+      }
+      assert.throws(() => {
+        DenseMatrix.fromJSON(json)
+      }, 'Bla')
+    })
   })
 
   describe('format', function () {
@@ -288,6 +299,18 @@ describe('DenseMatrix', function () {
 
       m.resize([0])
       assert.deepStrictEqual(m.valueOf(), [])
+    })
+
+    it('should resize the matrix with DenseMatrix as input', function () {
+      const m = new DenseMatrix([[1, 2, 3], [4, 5, 6]])
+      m.resize(new DenseMatrix([2, 4]))
+      assert.deepStrictEqual(m.valueOf(), [[1, 2, 3, 0], [4, 5, 6, 0]])
+    })
+
+    it('should resize the matrix with SparseMatrix as input', function () {
+      const m = new DenseMatrix([[1, 2, 3], [4, 5, 6]])
+      m.resize(new SparseMatrix([2, 4]))
+      assert.deepStrictEqual(m.valueOf(), [[1, 2, 3, 0], [4, 5, 6, 0]])
     })
 
     it('should resize the matrix with null default value', function () {
@@ -686,7 +709,7 @@ describe('DenseMatrix', function () {
       const m = new DenseMatrix([[1, 2, 3], [4, 5, 6]])
       const m2 = m.map(
         function (value, index, obj) {
-          return math.clone([value, index, obj === m])
+          return JSON.stringify([value, index, obj === m])
         }
       )
 
@@ -694,14 +717,14 @@ describe('DenseMatrix', function () {
         m2.toArray(),
         [
           [
-            [1, [0, 0], true],
-            [2, [0, 1], true],
-            [3, [0, 2], true]
+            '[1,[0,0],true]',
+            '[2,[0,1],true]',
+            '[3,[0,2],true]'
           ],
           [
-            [4, [1, 0], true],
-            [5, [1, 1], true],
-            [6, [1, 2], true]
+            '[4,[1,0],true]',
+            '[5,[1,1],true]',
+            '[6,[1,2],true]'
           ]
         ])
     })
@@ -800,7 +823,7 @@ describe('DenseMatrix', function () {
     it('should return array, complex numbers', function () {
       const m = new DenseMatrix({
         data: [new Complex(1, 1), new Complex(4, 4), new Complex(5, 5), new Complex(2, 2), new Complex(3, 3), new Complex(6, 6)],
-        size: [1, 6]
+        size: [6]
       })
 
       const a = m.toArray()

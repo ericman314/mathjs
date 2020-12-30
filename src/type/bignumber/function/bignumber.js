@@ -1,5 +1,5 @@
-import { factory } from '../../../utils/factory'
-import { deepMap } from '../../../utils/collection'
+import { factory } from '../../../utils/factory.js'
+import { deepMap } from '../../../utils/collection.js'
 
 const name = 'bignumber'
 const dependencies = ['typed', 'BigNumber']
@@ -30,7 +30,7 @@ export const createBignumber = /* #__PURE__ */ factory(name, dependencies, ({ ty
    *                                                    0 by default.
    * @returns {BigNumber} The created bignumber
    */
-  const bignumber = typed('bignumber', {
+  return typed('bignumber', {
     '': function () {
       return new BigNumber(0)
     },
@@ -58,9 +58,7 @@ export const createBignumber = /* #__PURE__ */ factory(name, dependencies, ({ ty
     },
 
     'Array | Matrix': function (x) {
-      return deepMap(x, bignumber)
+      return deepMap(x, this)
     }
   })
-
-  return bignumber
 })

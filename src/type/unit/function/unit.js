@@ -1,5 +1,5 @@
-import { factory } from '../../../utils/factory'
-import { deepMap } from '../../../utils/collection'
+import { factory } from '../../../utils/factory.js'
+import { deepMap } from '../../../utils/collection.js'
 
 const name = 'unit'
 const dependencies = ['typed', 'Unit']
@@ -30,7 +30,7 @@ export const createUnitFunction = /* #__PURE__ */ factory(name, dependencies, ({
    * @return {Unit | Array | Matrix}    The created unit
    */
 
-  const unit = typed(name, {
+  return typed(name, {
     Unit: function (x) {
       return x.clone()
     },
@@ -48,9 +48,7 @@ export const createUnitFunction = /* #__PURE__ */ factory(name, dependencies, ({
     },
 
     'Array | Matrix': function (x) {
-      return deepMap(x, unit)
+      return deepMap(x, this)
     }
   })
-
-  return unit
 })

@@ -1,6 +1,6 @@
-import { isNode } from '../../utils/is'
-import { map } from '../../utils/array'
-import { factory } from '../../utils/factory'
+import { isNode } from '../../utils/is.js'
+import { map } from '../../utils/array.js'
+import { factory } from '../../utils/factory.js'
 
 const name = 'ArrayNode'
 const dependencies = [
@@ -25,12 +25,6 @@ export const createArrayNode = /* #__PURE__ */ factory(name, dependencies, ({ No
     if (!Array.isArray(this.items) || !this.items.every(isNode)) {
       throw new TypeError('Array containing Nodes expected')
     }
-
-    // TODO: deprecated since v3, remove some day
-    const deprecated = function () {
-      throw new Error('Property `ArrayNode.nodes` is deprecated, use `ArrayNode.items` instead')
-    }
-    Object.defineProperty(this, 'nodes', { get: deprecated, set: deprecated })
   }
 
   ArrayNode.prototype = new Node()

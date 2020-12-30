@@ -1,5 +1,5 @@
 import assert from 'assert'
-import math from '../../../../src/bundleAny'
+import math from '../../../../src/defaultInstance.js'
 const index = math.index
 const Matrix = math.Matrix
 const SparseMatrix = math.SparseMatrix
@@ -365,6 +365,26 @@ describe('SparseMatrix', function () {
           [1, 2, 3, 0],
           [4, 5, 6, 0]
         ])
+    })
+
+    it('should resize using SparseMatrix input', function () {
+      const m = new SparseMatrix(
+        [
+          [1, 2, 3],
+          [4, 5, 6]
+        ])
+      m.resize(new SparseMatrix([2, 4]))
+      assert.deepStrictEqual(m._size, [2, 4])
+    })
+
+    it('should resize using DenseMatrix input', function () {
+      const m = new SparseMatrix(
+        [
+          [1, 2, 3],
+          [4, 5, 6]
+        ])
+      m.resize(new DenseMatrix([2, 4]))
+      assert.deepStrictEqual(m._size, [2, 4])
     })
 
     it('should increase columns as needed, non zero value', function () {
@@ -1359,7 +1379,7 @@ describe('SparseMatrix', function () {
         ptr: [0, 2, 3, 4],
         size: [3, 3]
       })
-      assert.throws(function () { m.map(function () {}, m, true) }, /Cannot invoke map on a Pattern only matrix/)
+      assert.throws(function () { m.map(function () { return undefined }, m, true) }, /Cannot invoke map on a Pattern only matrix/)
     })
   })
 

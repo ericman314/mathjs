@@ -1,6 +1,6 @@
-import { factory } from '../../utils/factory'
-import { deepMap } from '../../utils/collection'
-import { logNumber } from '../../plain/number'
+import { factory } from '../../utils/factory.js'
+import { deepMap } from '../../utils/collection.js'
+import { logNumber } from '../../plain/number/index.js'
 
 const name = 'log'
 const dependencies = ['config', 'typed', 'divideScalar', 'Complex']
@@ -40,7 +40,7 @@ export const createLog = /* #__PURE__ */ factory(name, dependencies, ({ typed, c
    * @return {number | BigNumber | Complex | Array | Matrix}
    *            Returns the logarithm of `x`
    */
-  const log = typed(name, {
+  return typed(name, {
     number: function (x) {
       if (x >= 0 || config.predictable) {
         return logNumber(x)
@@ -64,14 +64,12 @@ export const createLog = /* #__PURE__ */ factory(name, dependencies, ({ typed, c
     },
 
     'Array | Matrix': function (x) {
-      return deepMap(x, log)
+      return deepMap(x, this)
     },
 
     'any, any': function (x, base) {
       // calculate logarithm for a specified base, log(x, base)
-      return divideScalar(log(x), log(base))
+      return divideScalar(this(x), this(base))
     }
   })
-
-  return log
 })

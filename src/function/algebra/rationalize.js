@@ -1,7 +1,7 @@
-import { isInteger } from '../../utils/number'
-import { factory } from '../../utils/factory'
-import { createSimplifyConstant } from './simplify/simplifyConstant'
-import { createSimplifyCore } from './simplify/simplifyCore'
+import { isInteger } from '../../utils/number.js'
+import { factory } from '../../utils/factory.js'
+import { createSimplifyConstant } from './simplify/simplifyConstant.js'
+import { createSimplifyCore } from './simplify/simplifyCore.js'
 
 const name = 'rationalize'
 const dependencies = [
@@ -125,33 +125,33 @@ export const createRationalize = /* #__PURE__ */ factory(name, dependencies, ({
    *           {Expression Node}  node simplified expression
    *
    */
-  const rationalize = typed(name, {
+  return typed(name, {
     string: function (expr) {
-      return rationalize(parse(expr), {}, false)
+      return this(parse(expr), {}, false)
     },
 
     'string, boolean': function (expr, detailed) {
-      return rationalize(parse(expr), {}, detailed)
+      return this(parse(expr), {}, detailed)
     },
 
     'string, Object': function (expr, scope) {
-      return rationalize(parse(expr), scope, false)
+      return this(parse(expr), scope, false)
     },
 
     'string, Object, boolean': function (expr, scope, detailed) {
-      return rationalize(parse(expr), scope, detailed)
+      return this(parse(expr), scope, detailed)
     },
 
     Node: function (expr) {
-      return rationalize(expr, {}, false)
+      return this(expr, {}, false)
     },
 
     'Node, boolean': function (expr, detailed) {
-      return rationalize(expr, {}, detailed)
+      return this(expr, {}, detailed)
     },
 
     'Node, Object': function (expr, scope) {
-      return rationalize(expr, scope, false)
+      return this(expr, scope, false)
     },
 
     'Node, Object, boolean': function (expr, scope, detailed) {
@@ -275,9 +275,7 @@ export const createRationalize = /* #__PURE__ */ factory(name, dependencies, ({
         throw new Error('There is an unsolved function call')
       } else if (tp === 'OperatorNode') {
         if (node.op === '^') {
-          if (node.args[1].fn === 'unaryMinus') {
-            node = node.args[0]
-          }
+          // TODO: handle negative exponents like in '1/x^(-2)'
           if (node.args[1].type !== 'ConstantNode' || !isInteger(parseFloat(node.args[1].value))) {
             throw new Error('There is a non-integer exponent')
           } else {
@@ -645,6 +643,4 @@ export const createRationalize = /* #__PURE__ */ factory(name, dependencies, ({
       } else { throw new Error('Type ' + tp + ' is not allowed') }
     } // End of recurPol
   } // End of polyToCanonical
-
-  return rationalize
 })

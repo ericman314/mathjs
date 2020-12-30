@@ -1,8 +1,9 @@
-import { isComplex, isUnit, typeOf } from '../../utils/is'
-import { factory } from '../../utils/factory'
-import { endsWith } from '../../utils/string'
-import { clone, hasOwnProperty } from '../../utils/object'
-import { createBigNumberPi as createPi } from '../../utils/bignumber/constants'
+import { isComplex, isUnit, typeOf } from '../../utils/is.js'
+import { factory } from '../../utils/factory.js'
+import { memoize } from '../../utils/function.js'
+import { endsWith } from '../../utils/string.js'
+import { clone, hasOwnProperty } from '../../utils/object.js'
+import { createBigNumberPi as createPi } from '../../utils/bignumber/constants.js'
 
 const name = 'Unit'
 const dependencies = [
@@ -216,20 +217,15 @@ export const createUnitClass = /* #__PURE__ */ factory(name, dependencies, ({
     let unitName = ''
 
     // Alphanumeric characters only; matches [a-zA-Z0-9]
-    let code = text.charCodeAt(index)
-    while ((code >= 48 && code <= 57) ||
-            (code >= 65 && code <= 90) ||
-            (code >= 97 && code <= 122)) {
+    while (isDigit(c) || Unit.isValidAlpha(c)) {
       unitName += c
       next()
-      code = text.charCodeAt(index)
     }
 
     // Must begin with [a-zA-Z]
-    code = unitName.charCodeAt(0)
-    if ((code >= 65 && code <= 90) ||
-        (code >= 97 && code <= 122)) {
-      return unitName || null
+    const firstC = unitName.charAt(0)
+    if (Unit.isValidAlpha(firstC)) {
+      return unitName
     } else {
       return null
     }
@@ -572,7 +568,7 @@ export const createUnitClass = /* #__PURE__ */ factory(name, dependencies, ({
    *                                  prefix is returned. Else, null is returned.
    * @private
    */
-  function _findUnit (str) {
+  const _findUnit = memoize((str) => {
     // First, match units names exactly. For example, a user could define 'mm' as 10^-4 m, which is silly, but then we would want 'mm' to match the user-defined unit.
     if (hasOwnProperty(UNITS, str)) {
       const unit = UNITS[str]
@@ -604,7 +600,7 @@ export const createUnitClass = /* #__PURE__ */ factory(name, dependencies, ({
     }
 
     return null
-  }
+  }, { hasher: (args) => args[0], limit: 100 })
 
   /**
    * Test if the given expression is a unit.
@@ -683,10 +679,9 @@ export const createUnitClass = /* #__PURE__ */ factory(name, dependencies, ({
 
     // Append other's units list onto res
     for (let i = 0; i < other.units.length; i++) {
-      // Make a deep copy
-      const inverted = {}
-      for (const key in other.units[i]) {
-        inverted[key] = other.units[i][key]
+      // Make a shallow copy of every unit
+      const inverted = {
+        ...other.units[i]
       }
       res.units.push(inverted)
     }
@@ -721,12 +716,11 @@ export const createUnitClass = /* #__PURE__ */ factory(name, dependencies, ({
 
     // Invert and append other's units list onto res
     for (let i = 0; i < other.units.length; i++) {
-      // Make a deep copy
-      const inverted = {}
-      for (const key in other.units[i]) {
-        inverted[key] = other.units[i][key]
+      // Make a shallow copy of every unit
+      const inverted = {
+        ...other.units[i],
+        power: -other.units[i].power
       }
-      inverted.power = -inverted.power
       res.units.push(inverted)
     }
 
@@ -880,7 +874,7 @@ export const createUnitClass = /* #__PURE__ */ factory(name, dependencies, ({
       other = this.clone()
     }
 
-    if (other._isDerived()) {
+    if (other._isDerived() || other.units.length === 0) {
       return other._denormalize(other.value)
     } else {
       return other._denormalize(other.value, other.units[0].prefix.value)
@@ -943,9 +937,11 @@ export const createUnitClass = /* #__PURE__ */ factory(name, dependencies, ({
     // Search for a matching base
     let matchingBase
     for (const key in currentUnitSystem) {
-      if (ret.hasBase(BASE_UNITS[key])) {
-        matchingBase = key
-        break
+      if (hasOwnProperty(currentUnitSystem, key)) {
+        if (ret.hasBase(BASE_UNITS[key])) {
+          matchingBase = key
+          break
+        }
       }
     }
 
@@ -1103,7 +1099,8 @@ export const createUnitClass = /* #__PURE__ */ factory(name, dependencies, ({
     // Simplfy the unit list, unless it is valueless or was created directly in the
     // constructor or as the result of to or toSI
     const simp = this.skipAutomaticSimplification || this.value === null
-      ? this.clone() : this.simplify()
+      ? this.clone()
+      : this.simplify()
 
     // Apply some custom logic for handling VA and VAR. The goal is to express the value of the unit as a real value, if possible. Otherwise, use a real-valued unit instead of a complex-valued one.
     let isImaginary = false
@@ -1113,11 +1110,13 @@ export const createUnitClass = /* #__PURE__ */ factory(name, dependencies, ({
     }
 
     for (const i in simp.units) {
-      if (simp.units[i].unit) {
-        if (simp.units[i].unit.name === 'VA' && isImaginary) {
-          simp.units[i].unit = UNITS.VAR
-        } else if (simp.units[i].unit.name === 'VAR' && !isImaginary) {
-          simp.units[i].unit = UNITS.VA
+      if (hasOwnProperty(simp.units, i)) {
+        if (simp.units[i].unit) {
+          if (simp.units[i].unit.name === 'VA' && isImaginary) {
+            simp.units[i].unit = UNITS.VAR
+          } else if (simp.units[i].unit.name === 'VAR' && !isImaginary) {
+            simp.units[i].unit = UNITS.VA
+          }
         }
       }
     }
@@ -1188,7 +1187,7 @@ export const createUnitClass = /* #__PURE__ */ factory(name, dependencies, ({
             Math.log(absValue / Math.pow(prefix.value * absUnitValue, power)) / Math.LN10 - 1.2)
 
           if (diff < bestDiff ||
-              (diff === bestDiff && prefix.name.length < bestPrefix.name.length)) {
+            (diff === bestDiff && prefix.name.length < bestPrefix.name.length)) {
             // choose the prefix with the smallest diff, or if equal, choose the one
             // with the shortest name (can happen with SHORTLONG for example)
             bestPrefix = prefix
@@ -1516,7 +1515,9 @@ export const createUnitClass = /* #__PURE__ */ factory(name, dependencies, ({
   }
 
   for (const key in BASE_UNITS) {
-    BASE_UNITS[key].key = key
+    if (hasOwnProperty(BASE_UNITS, key)) {
+      BASE_UNITS[key].key = key
+    }
   }
 
   const BASE_UNIT_NONE = {}
@@ -2431,6 +2432,13 @@ export const createUnitClass = /* #__PURE__ */ factory(name, dependencies, ({
       value: 4448.2216,
       offset: 0
     },
+    kilogramforce: {
+      name: 'kilogramforce',
+      base: BASE_UNITS.FORCE,
+      prefixes: PREFIXES.NONE,
+      value: 9.80665,
+      offset: 0
+    },
 
     // Energy
     J: {
@@ -2780,6 +2788,7 @@ export const createUnitClass = /* #__PURE__ */ factory(name, dependencies, ({
     lbs: 'lbm',
 
     kips: 'kip',
+    kgf: 'kilogramforce',
 
     acres: 'acre',
     hectares: 'hectare',
@@ -2957,8 +2966,10 @@ export const createUnitClass = /* #__PURE__ */ factory(name, dependencies, ({
    */
   Unit.getUnitSystem = function () {
     for (const key in UNIT_SYSTEMS) {
-      if (UNIT_SYSTEMS[key] === currentUnitSystem) {
-        return key
+      if (hasOwnProperty(UNIT_SYSTEMS, key)) {
+        if (UNIT_SYSTEMS[key] === currentUnitSystem) {
+          return key
+        }
       }
     }
   }
@@ -3003,8 +3014,10 @@ export const createUnitClass = /* #__PURE__ */ factory(name, dependencies, ({
 
   // Add dimensions to each built-in unit
   for (const key in UNITS) {
-    const unit = UNITS[key]
-    unit.dimensions = unit.base.dimensions
+    if (hasOwnProperty(UNITS, key)) {
+      const unit = UNITS[key]
+      unit.dimensions = unit.base.dimensions
+    }
   }
 
   // Create aliases
@@ -3022,22 +3035,23 @@ export const createUnitClass = /* #__PURE__ */ factory(name, dependencies, ({
     }
   }
 
+  /**
+   * Checks if a character is a valid latin letter (upper or lower case).
+   * Note that this function can be overridden, for example to allow support of other alphabets.
+   * @param {string} c Tested character
+   */
+  Unit.isValidAlpha = function isValidAlpha (c) {
+    return /^[a-zA-Z]$/.test(c)
+  }
+
   function assertUnitNameIsValid (name) {
     for (let i = 0; i < name.length; i++) {
-      const c = name.charAt(i)
+      c = name.charAt(i)
 
-      const isValidAlpha = function (p) {
-        return /^[a-zA-Z]$/.test(p)
-      }
+      if (i === 0 && !Unit.isValidAlpha(c)) { throw new Error('Invalid unit name (must begin with alpha character): "' + name + '"') }
 
-      const isDigit = function (c) {
-        return (c >= '0' && c <= '9')
-      }
-
-      if (i === 0 && !isValidAlpha(c)) { throw new Error('Invalid unit name (must begin with alpha character): "' + name + '"') }
-
-      if (i > 0 && !(isValidAlpha(c) ||
-                  isDigit(c))) { throw new Error('Invalid unit name (only alphanumeric characters are allowed): "' + name + '"') }
+      if (i > 0 && !(Unit.isValidAlpha(c) ||
+        isDigit(c))) { throw new Error('Invalid unit name (only alphanumeric characters are allowed): "' + name + '"') }
     }
   }
 
@@ -3277,6 +3291,9 @@ export const createUnitClass = /* #__PURE__ */ factory(name, dependencies, ({
       alias.name = aliasName
       Unit.UNITS[aliasName] = alias
     }
+    // delete the memoization cache, since adding a new unit to the array
+    // invalidates all old results
+    delete _findUnit.cache
 
     return new Unit(null, name)
   }

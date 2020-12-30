@@ -1,11 +1,12 @@
 import Decimal from 'decimal.js'
-import { factory } from '../../utils/factory'
+import { factory } from '../../utils/factory.js'
 
 const name = 'BigNumber'
 const dependencies = ['?on', 'config']
 
 export const createBigNumberClass = /* #__PURE__ */ factory(name, dependencies, ({ on, config }) => {
-  const BigNumber = Decimal.clone({ precision: config.precision })
+  const EUCLID = 9 // Use euclidian division for mod calculation
+  const BigNumber = Decimal.clone({ precision: config.precision, modulo: EUCLID })
 
   /**
    * Attach type information

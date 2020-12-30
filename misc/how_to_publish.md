@@ -16,13 +16,20 @@ Update the date and version number in the file `HISTORY.md`. Verify whether all
 changes in the new version are described.
 
 
+## Update authors
+
+Run:
+
+    npm run update-authors
+
+
 ## Build and test
 
-Build the distribution files in folders `dist` and `lib`, and test everything by running:
+Build the distribution files in folders under `lib`, and test everything by running:
 
     npm run build-and-test
 
-After the build is complete, verify if the files are created and contain the
+After the build is complete, verify whether the files are created and contain the
 correct date and version number in the header.
 
 

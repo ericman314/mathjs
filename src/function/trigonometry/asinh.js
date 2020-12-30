@@ -1,6 +1,6 @@
-import { factory } from '../../utils/factory'
-import { deepMap } from '../../utils/collection'
-import { asinhNumber } from '../../plain/number'
+import { factory } from '../../utils/factory.js'
+import { deepMap } from '../../utils/collection.js'
+import { asinhNumber } from '../../plain/number/index.js'
 
 const name = 'asinh'
 const dependencies = ['typed']
@@ -27,7 +27,7 @@ export const createAsinh = /* #__PURE__ */ factory(name, dependencies, ({ typed 
    * @param {number | Complex | Array | Matrix} x  Function input
    * @return {number | Complex | Array | Matrix} Hyperbolic arcsine of x
    */
-  const asinh = typed('asinh', {
+  return typed('asinh', {
     number: asinhNumber,
 
     Complex: function (x) {
@@ -40,9 +40,7 @@ export const createAsinh = /* #__PURE__ */ factory(name, dependencies, ({ typed 
 
     'Array | Matrix': function (x) {
       // deep map collection, skip zeros since asinh(0) = 0
-      return deepMap(x, asinh, true)
+      return deepMap(x, this, true)
     }
   })
-
-  return asinh
 })

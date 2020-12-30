@@ -65,17 +65,29 @@ const IGNORE_WARNINGS = {
  */
 function generateDoc (name, code) {
   // get block comment from code
-  const match = /\/\*\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\//.exec(code)
+  const commentRegex = /\/\*\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\//g
+  // const match = commentRegex.exec(code)
 
-  if (!match) {
+  const comments = findAll(code, commentRegex).map(match => getCommentContents(match[0]))
+
+  // Find the right comment.
+  // First search a comment containing the text "Syntax:" and "Examples:".
+  // If not found, select the first comment
+  const comment = comments.find(comment => {
+    return /\n *syntax: *\n/i.exec(comment) && /\n *examples: *\n/i.exec(comment)
+  }) || comments[0]
+
+  if (!comment) {
     return null
   }
 
   // get text content inside block comment
-  const comment = match[0].replace('/**', '')
-    .replace('*/', '')
-    .replace(/\n\s*\* ?/g, '\n')
-    .replace(/\r/g, '')
+  function getCommentContents (comment) {
+    return comment.replace('/**', '')
+      .replace('*/', '')
+      .replace(/\n\s*\* ?/g, '\n')
+      .replace(/\r/g, '')
+  }
 
   const lines = comment.split('\n')
   let line = ''
@@ -512,10 +524,10 @@ function iteratePath (functionNames, inputPath, outputPath, outputRoot) {
         } else {
           category = path[functionIndex + 1]
         }
-      } else if (fullPath === './lib/expression/parse.js') {
+      } else if (fullPath === './lib/cjs/expression/parse.js') {
         // TODO: this is an ugly special case
         category = 'expression'
-      } else if (path.join('/') === './lib/type') {
+      } else if (path.join('/') === './lib/cjs/type') {
         // for boolean.js, number.js, string.js
         category = 'construction'
       }
@@ -632,6 +644,20 @@ function iteratePath (functionNames, inputPath, outputPath, outputRoot) {
       log(issues.length + ' warnings')
     }
   })
+}
+
+function findAll (text, regex) {
+  const matches = []
+  let match
+
+  do {
+    match = regex.exec(text)
+    if (match) {
+      matches.push(match)
+    }
+  } while (match)
+
+  return matches
 }
 
 // exports

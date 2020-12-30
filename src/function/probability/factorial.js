@@ -1,5 +1,5 @@
-import { deepMap } from '../../utils/collection'
-import { factory } from '../../utils/factory'
+import { deepMap } from '../../utils/collection.js'
+import { factory } from '../../utils/factory.js'
 
 const name = 'factorial'
 const dependencies = ['typed', 'gamma']
@@ -27,7 +27,7 @@ export const createFactorial = /* #__PURE__ */ factory(name, dependencies, ({ ty
    * @param {number | BigNumber | Array | Matrix} n   An integer number
    * @return {number | BigNumber | Array | Matrix}    The factorial of `n`
    */
-  const factorial = typed(name, {
+  return typed(name, {
     number: function (n) {
       if (n < 0) {
         throw new Error('Value must be non-negative')
@@ -45,9 +45,7 @@ export const createFactorial = /* #__PURE__ */ factory(name, dependencies, ({ ty
     },
 
     'Array | Matrix': function (n) {
-      return deepMap(n, factorial)
+      return deepMap(n, this)
     }
   })
-
-  return factorial
 })

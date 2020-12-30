@@ -1,6 +1,6 @@
-import { deepMap } from '../../utils/collection'
-import { factory } from '../../utils/factory'
-import { gammaG, gammaNumber, gammaP } from '../../plain/number'
+import { deepMap } from '../../utils/collection.js'
+import { factory } from '../../utils/factory.js'
+import { gammaG, gammaNumber, gammaP } from '../../plain/number/index.js'
 
 const name = 'gamma'
 const dependencies = ['typed', 'config', 'multiplyScalar', 'pow', 'BigNumber', 'Complex']
@@ -30,13 +30,13 @@ export const createGamma = /* #__PURE__ */ factory(name, dependencies, ({ typed,
    * @return {number | Array | Matrix}    The gamma of `n`
    */
 
-  const gamma = typed(name, {
+  return typed(name, {
 
     number: gammaNumber,
 
     Complex: function (n) {
       if (n.im === 0) {
-        return gamma(n.re)
+        return this(n.re)
       }
 
       n = new Complex(n.re - 1, n.im)
@@ -90,7 +90,7 @@ export const createGamma = /* #__PURE__ */ factory(name, dependencies, ({ typed,
     },
 
     'Array | Matrix': function (n) {
-      return deepMap(n, gamma)
+      return deepMap(n, this)
     }
   })
 
@@ -123,6 +123,4 @@ export const createGamma = /* #__PURE__ */ factory(name, dependencies, ({ typed,
 
     return new BigNumber(prod.toPrecision(BigNumber.precision))
   }
-
-  return gamma
 })

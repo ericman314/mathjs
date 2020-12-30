@@ -1,7 +1,7 @@
-import { factory } from '../../utils/factory'
-import { isBigNumber, isComplex, isFraction } from '../../utils/is'
-import { deepMap } from '../../utils/collection'
-import { cbrtNumber } from '../../plain/number'
+import { factory } from '../../utils/factory.js'
+import { isBigNumber, isComplex, isFraction } from '../../utils/is.js'
+import { deepMap } from '../../utils/collection.js'
+import { cbrtNumber } from '../../plain/number/index.js'
 
 const name = 'cbrt'
 const dependencies = [
@@ -55,7 +55,7 @@ export const createCbrt = /* #__PURE__ */ factory(name, dependencies, ({ config,
    * @return {number | BigNumber | Complex | Unit | Array | Matrix}
    *            Returns the cubic root of `x`
    */
-  const cbrt = typed(name, {
+  return typed(name, {
     number: cbrtNumber,
     // note: signature 'number, boolean' is also supported,
     //       created by typed as it knows how to convert number to Complex
@@ -72,7 +72,7 @@ export const createCbrt = /* #__PURE__ */ factory(name, dependencies, ({ config,
 
     'Array | Matrix': function (x) {
       // deep map collection, skip zeros since cbrt(0) = 0
-      return deepMap(x, cbrt, true)
+      return deepMap(x, this, true)
     }
   })
 
@@ -145,6 +145,4 @@ export const createCbrt = /* #__PURE__ */ factory(name, dependencies, ({ config,
       return result
     }
   }
-
-  return cbrt
 })

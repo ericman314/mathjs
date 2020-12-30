@@ -1,5 +1,195 @@
 # History
 
+# not yet published, version 8.1.1
+
+- Improved the performance of parsing and evaluating units a lot, see #2065. 
+  Thanks @flaviut.
+- Moved continuous integration testing from Travis CI to Github Workflow, 
+  see #2024, #2041. Thanks @harrysarson.
+
+
+# 2020-12-04, version 8.1.0
+
+- Implemented units `kilogramforce` (`kgf`). Thanks @rnd-debug.
+- Fix #2026: Implement a new option `fractionsLimit` for function `simplify`, 
+  defaulting to `Infinity`.
+- Improved the documentation of function `clone`. Thanks @redbar0n.
+
+
+# 2020-11-09, version 8.0.1
+
+- Fix #1979: missing "subset" dependency when using "mathjs/number" entry point.
+- Fix #2022: update pretty printing with MathJax example to the latest version 
+  of MathJax. Thanks @pkra.
+
+
+# 2020-11-06, version 8.0.0
+
+!!! BE CAREFUL: BREAKING CHANGES !!!
+
+- You can now use mathjs directly in node.js using ES modules without need for 
+  a transpiler (see #1928, #1941, #1962). 
+  Automatically loading either commonjs code or ES modules code is improved.
+  All generated code is moved under `/lib`: the browser bundle is moved from 
+  `/dist` to `/lib/browser`, ES module files are moved to `/lib/esm`, 
+  and commonjs files are moved to `/lib/cjs`. Thanks @GreenImp.
+- Non-minified bundle `dist/math.js` is no longer provided. Either use the
+  minified bundle, or create a bundle yourself.
+- Replaced random library `seed-random` with `seedrandom`, see #1955. 
+  Thanks @poppinlp.
+- Breaking changes in `pickRandom`, see #1990, #1976.
+  - Will no longer return the input matrix when the given number is greater 
+    than the length of the provided possibles. Instead, the function always
+    returns results with the requested number of picks.
+  - Will now return a `Matrix` as output when input was a `Matrix`.
+  - Introduced a new syntax:
+    
+    ```
+    math.pickRandom(array, { weights, number, elementWise })
+    ```
+  - Introduced a new option `elementWise`, which is `true` by default. 
+    When setting `elementWise` to false, an array containing arrays will return
+    random pick of arrays instead of the elements inside of the nested arrays.
+
+
+# 2020-11-02, version 7.6.0
+
+- Implemented function `rotate(w, theta)`. See #1992, #1160. Thanks @rnd-debug. 
+- Implemented support for custom characters in Units via `Unit.isValidAlpha`. 
+  See #1663, #2000. Thanks @rnd-debug.
+
+
+# 2020-10-10, version 7.5.1
+
+- Fix object pollution vulnerability in `math.config`. Thanks Snyk.
+
+
+# 2020-10-07, version 7.5.0
+
+- Function `pickRandom` now allows randomly picking elements from matrices 
+  with 2 or more dimensions instead of only from a vector, see #1974.
+  Thanks @KonradLinkowski.
+
+
+# 2020-10-07, version 7.4.0
+
+- Implemented support for passing a precision in functions `ceil`, `floor`, 
+  and `fix`, similar to `round`, see #1967, #1901. Thanks @rnd-debug.
+- Implemented function `rotationMatrix`, see #1160, #1984. Thanks @rnd-debug.
+- Implement a clear error message when using `sqrtm` with a matrix having 
+  more than two dimensions. Thanks @KonradLinkowski.
+- Update dependency `decimal.js` to `10.2.1`.
+
+
+# 2020-09-26, version 7.3.0
+
+- Implemented functions `usolveAll` and `lsolveAll`, see #1916. Thanks @m93a.
+- Implemented support for units in functions `std` and `variance`, see #1950. 
+  Thanks @rnd-debug.
+- Implemented support for binary, octal, and hexadecimal notation in the 
+  expression parser, and implemented functions `bin`, `oct`, and `hex` for 
+  formatting. Thanks @clnhlzmn.
+- Fix #1964: inconsistent calculation of negative dividend modulo for 
+  `BigNumber` and `Fraction`. Thanks @ovk.
+
+
+# 2020-08-24, version 7.2.0
+
+- Implemented new function `diff`, see #1634, #1920. Thanks @Veeloxfire. 
+- Implemented support for norm 2 for matrices in function `norm`. 
+  Thanks @rnd-debug. 
+
+
+# 2020-07-13, version 7.1.0
+
+- Implement support for recursion (self-referencing) of typed-functions, 
+  new in `typed-function@2.0.0`. This fixes #1885: functions which where 
+  extended with a new data type did not always work. Thanks @nickewing.
+- Fix #1899: documentation on expression trees still using old namespace 
+  `math.expression.node.*` instead of `math.*`.
+
+
+# 2020-06-24, version 7.0.2
+
+- Fix #1882: have `DenseMatrix.resize` and `SparseMatrix.resize` accept 
+  `DenseMatrix` and `SparseMatrix` as inputs too, not only `Array`.
+- Fix functions `sum`, `prod`, `min`, and `max` not throwing a conversion error
+  when passing a single string, like `sum("abc")`.
+
+
+# 2020-05-30, version 7.0.1
+
+- Fix #1844: clarify the documentation of function `eigs`. Thanks @Lazersmoke.
+- Fix #1855: Fix error in the documentation for `math.nthRoots(x)`.  
+- Fix #1856: make the library robust against Object prototype pollution.
+
+
+# 2020-05-07, version 7.0.0
+
+Breaking changes:
+
+- Improvements in calculation of the `dot` product of complex values. 
+  The first argument is now conjugated. See #1761. Thanks @m93a.  
+- Dropped official support for Node.js v8 which has reached end of life.
+- Removed all deprecation warnings introduced in v6. 
+  To upgrade smoothly from v5 to v7 or higher, upgrade to v6 first
+  and resolve all deprecation warnings.
+
+
+# 2020-05-04, version 6.6.5
+
+- Fix #1834: value `Infinity` cannot be serialized and deserialized. 
+  This is solved now with a new `math.replacer` function used as 
+  `JSON.stringify(value, math.replacer)`.
+- Fix #1842: value `Infinity` not turned into the latex symbol `\\infty`.
+
+
+# 2020-04-15, version 6.6.4
+
+- Fix published files containing Windows line endings (CRLF instead of LF).  
+
+
+# 2020-04-10, version 6.6.3
+
+- Fix #1813: bug in engineering notation for numbers of function `format`,
+  sometimes resulting in needless trailing zeros.
+- Fix #1808: methods `.toNumber()` and `.toNumeric()` not working on a 
+  unitless unit.
+- Fix #1645: not being able to use named operators `mod`, `and`, `not`, `or`,
+  `xor`, `to`, `in` as object keys. Thanks @Veeloxfire.
+- Fix `eigs` not using `config.epsilon`.
+
+
+# 2020-03-29, version 6.6.2
+
+- Fix #1789: Function `eigs` not calculating with BigNumber precision 
+  when input contains BigNumbers.
+- Run the build script during npm `prepare`, so you can use the library
+  directly when installing directly from git. See #1751. Thanks @cinderblock.
+
+
+# 2020-02-26, version 6.6.1
+
+- Fix #1725: simplify `a/(b/c)`. Thanks @dbramwell.
+- Fix examples in documentation of `row` and `column`.
+
+
+# 2020-02-01, version 6.6.0
+
+- Implemented function `eigs`, see #1705, #542 #1175. Thanks @arkajitmandal.
+- Fixed #1727: validate matrix size when creating a `DenseMatrix` using
+  `fromJSON`.
+- Fixed `DenseMatrix.map` copying the size and datatype from the original
+  matrix instead of checking the returned dimensions and type of the callback.
+- Add a caret to dependencies (like) `^1.2.3`) to allow downstream updates
+  without having to await a new release of mathjs.
+
+
+# 2020-01-08, version 6.5.0
+
+- Implemented `baseName` option for `createUnit`, see #1707.
+  Thanks @ericman314.
+
 
 # 2020-01-06, version 6.4.0
 

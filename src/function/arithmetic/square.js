@@ -1,6 +1,6 @@
-import { factory } from '../../utils/factory'
-import { deepMap } from '../../utils/collection'
-import { squareNumber } from '../../plain/number'
+import { factory } from '../../utils/factory.js'
+import { deepMap } from '../../utils/collection.js'
+import { squareNumber } from '../../plain/number/index.js'
 
 const name = 'square'
 const dependencies = ['typed']
@@ -32,7 +32,7 @@ export const createSquare = /* #__PURE__ */ factory(name, dependencies, ({ typed
    * @return {number | BigNumber | Fraction | Complex | Array | Matrix | Unit}
    *            Squared value
    */
-  const square = typed(name, {
+  return typed(name, {
     number: squareNumber,
 
     Complex: function (x) {
@@ -49,13 +49,11 @@ export const createSquare = /* #__PURE__ */ factory(name, dependencies, ({ typed
 
     'Array | Matrix': function (x) {
       // deep map collection, skip zeros since square(0) = 0
-      return deepMap(x, square, true)
+      return deepMap(x, this, true)
     },
 
     Unit: function (x) {
       return x.pow(2)
     }
   })
-
-  return square
 })

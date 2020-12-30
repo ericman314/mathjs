@@ -1,8 +1,8 @@
 // test multiply
 import assert from 'assert'
 
-import math from '../../../../src/bundleAny'
-import approx from '../../../../tools/approx'
+import math from '../../../../src/defaultInstance.js'
+import approx from '../../../../tools/approx.js'
 const multiply = math.multiply
 const divide = math.divide
 const matrix = math.matrix
@@ -283,6 +283,14 @@ describe('multiply', function () {
 
       approx.deepEqual(multiply(a, b), 32)
       approx.deepEqual(multiply(matrix(a), matrix(b)), 32)
+    })
+
+    it('should conjugate the first argument in dot product', function () {
+      const a = [complex(1, 2), complex(3, 4)]
+      const b = [complex(5, 6), complex(7, 8)]
+
+      approx.deepEqual(multiply(a, b), complex(70, -8))
+      approx.deepEqual(multiply(matrix(a), matrix(b)), complex(70, -8))
     })
 
     it('should multiply row vector x column vector', function () {

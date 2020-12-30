@@ -1,7 +1,7 @@
 // test simplify
 import assert from 'assert'
 
-import math from '../../../../src/bundleAny'
+import math from '../../../../src/defaultInstance.js'
 
 describe('simplify', function () {
   function simplifyAndCompare (left, right, rules, scope, opt) {
@@ -174,6 +174,7 @@ describe('simplify', function () {
   })
 
   it('should preserve the value of BigNumbers', function () {
+    this.timeout(10000)
     const bigmath = math.create({ number: 'BigNumber', precision: 64 })
     assert.deepStrictEqual(bigmath.simplify('111111111111111111 + 111111111111111111').evaluate(), bigmath.evaluate('222222222222222222'))
     assert.deepStrictEqual(bigmath.simplify('1 + 111111111111111111').evaluate(), bigmath.evaluate('111111111111111112'))
@@ -255,6 +256,13 @@ describe('simplify', function () {
     simplifyAndCompare('myMultiArg(x, y, z, w)', 'myMultiArg(x, y, z, w)')
   })
 
+  it('should simplify a/(b/c)', function () {
+    simplifyAndCompare('x/(x/y)', 'y')
+    simplifyAndCompare('x/(y/z)', 'x * z/y')
+    simplifyAndCompare('(x + 1)/((x + 1)/(z + 3))', 'z + 3')
+    simplifyAndCompare('(x + 1)/((y + 2)/(z + 3))', '(x + 1) * (z + 3)/(y + 2)')
+  })
+
   it('should support custom rules', function () {
     const node = math.simplify('y+x', [{ l: 'n1-n2', r: '-n2+n1' }], { x: 5 })
     assert.strictEqual(node.toString(), 'y + 5')
@@ -285,13 +293,19 @@ describe('simplify', function () {
     simplifyAndCompare('x-0', 'x')
   })
 
-  it('new options parameters', function () {
+  it('options parameters', function () {
     simplifyAndCompare('0.1*x', 'x/10')
     simplifyAndCompare('0.1*x', 'x/10', math.simplify.rules, {}, { exactFractions: true })
     simplifyAndCompare('0.1*x', '0.1*x', math.simplify.rules, {}, { exactFractions: false })
     simplifyAndCompare('y+0.1*x', 'x/10+1', { y: 1 })
     simplifyAndCompare('y+0.1*x', 'x/10+1', { y: 1 }, { exactFractions: true })
     simplifyAndCompare('y+0.1*x', '0.1*x+1', { y: 1 }, { exactFractions: false })
+
+    simplifyAndCompare('0.00125', '1 / 800', math.simplify.rules, {}, { exactFractions: true })
+    simplifyAndCompare('0.00125', '0.00125', math.simplify.rules, {}, { exactFractions: true, fractionsLimit: 100 })
+    simplifyAndCompare('0.4', '2 / 5', math.simplify.rules, {}, { exactFractions: true, fractionsLimit: 100 })
+    simplifyAndCompare('100.8', '504 / 5', math.simplify.rules, {}, { exactFractions: true })
+    simplifyAndCompare('100.8', '100.8', math.simplify.rules, {}, { exactFractions: true, fractionsLimit: 100 })
   })
 
   it('resolve() should substitute scoped constants', function () {

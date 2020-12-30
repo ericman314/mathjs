@@ -1,5 +1,5 @@
 import assert from 'assert'
-import math from '../../../../src/bundleAny'
+import math from '../../../../src/defaultInstance.js'
 const matrix = math.matrix
 const identity = math.identity
 
@@ -66,9 +66,5 @@ describe('identity', function () {
   it('should LaTeX identity', function () {
     const expression = math.parse('identity(2)')
     assert.strictEqual(expression.toTex(), '\\mathrm{identity}\\left(2\\right)')
-  })
-
-  it('should throw an error when using the deprecated function eye', function () {
-    assert.throws(function () { math.eye(2) }, /Function "eye" is renamed to "identity"/)
   })
 })

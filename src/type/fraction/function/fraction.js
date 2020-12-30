@@ -1,5 +1,5 @@
-import { factory } from '../../../utils/factory'
-import { deepMap } from '../../../utils/collection'
+import { factory } from '../../../utils/factory.js'
+import { deepMap } from '../../../utils/collection.js'
 
 const name = 'fraction'
 const dependencies = ['typed', 'Fraction']
@@ -30,7 +30,7 @@ export const createFraction = /* #__PURE__ */ factory(name, dependencies, ({ typ
    *            the fraction
    * @return {Fraction | Array | Matrix} Returns a fraction
    */
-  const fraction = typed('fraction', {
+  return typed('fraction', {
     number: function (x) {
       if (!isFinite(x) || isNaN(x)) {
         throw new Error(x + ' cannot be represented as a fraction')
@@ -64,9 +64,7 @@ export const createFraction = /* #__PURE__ */ factory(name, dependencies, ({ typ
     },
 
     'Array | Matrix': function (x) {
-      return deepMap(x, fraction)
+      return deepMap(x, this)
     }
   })
-
-  return fraction
 })

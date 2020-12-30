@@ -1,7 +1,7 @@
-import { isHelp } from '../utils/is'
-import { clone } from '../utils/object'
-import { format } from '../utils/string'
-import { factory } from '../utils/factory'
+import { isHelp } from '../utils/is.js'
+import { clone } from '../utils/object.js'
+import { format } from '../utils/string.js'
+import { factory } from '../utils/factory.js'
 
 const name = 'Help'
 const dependencies = ['parse']
@@ -99,11 +99,13 @@ export const createHelpClass = /* #__PURE__ */ factory(name, dependencies, ({ pa
    */
   Help.fromJSON = function (json) {
     const doc = {}
-    for (const prop in json) {
-      if (prop !== 'mathjs') { // ignore mathjs field
+
+    Object.keys(json)
+      .filter(prop => prop !== 'mathjs')
+      .forEach(prop => {
         doc[prop] = json[prop]
-      }
-    }
+      })
+
     return new Help(doc)
   }
 

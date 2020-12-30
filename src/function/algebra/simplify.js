@@ -1,10 +1,10 @@
-import { isConstantNode, isParenthesisNode } from '../../utils/is'
-import { factory } from '../../utils/factory'
-import { createUtil } from './simplify/util'
-import { createSimplifyCore } from './simplify/simplifyCore'
-import { createSimplifyConstant } from './simplify/simplifyConstant'
-import { createResolve } from './simplify/resolve'
-import { hasOwnProperty } from '../../utils/object'
+import { isConstantNode, isParenthesisNode } from '../../utils/is.js'
+import { factory } from '../../utils/factory.js'
+import { createUtil } from './simplify/util.js'
+import { createSimplifyCore } from './simplify/simplifyCore.js'
+import { createSimplifyConstant } from './simplify/simplifyConstant.js'
+import { createResolve } from './simplify/resolve.js'
+import { hasOwnProperty } from '../../utils/object.js'
 
 const name = 'simplify'
 const dependencies = [
@@ -120,8 +120,11 @@ export const createSimplify = /* #__PURE__ */ factory(name, dependencies, (
    * - [Symbolic computation - Simplification (Wikipedia)](https://en.wikipedia.org/wiki/Symbolic_computation#Simplification)
    *
    *  An optional `options` argument can be passed as last argument of `simplify`.
-   *  There is currently one option available: `exactFractions`, a boolean which
-   *  is `true` by default.
+   *  There is currently one option available:
+   *  - `exactFractions`: a boolean which is `true` by default.
+   *  - `fractionsLimit`: when `exactFractions` is true, a fraction will be returned
+   *    only when both numerator and denominator are smaller than `fractionsLimit`.
+   *    Default value is 10000.
    *
    * Syntax:
    *
@@ -154,47 +157,47 @@ export const createSimplify = /* #__PURE__ */ factory(name, dependencies, (
    */
   const simplify = typed('simplify', {
     string: function (expr) {
-      return simplify(parse(expr), simplify.rules, {}, {})
+      return this(parse(expr), this.rules, {}, {})
     },
 
     'string, Object': function (expr, scope) {
-      return simplify(parse(expr), simplify.rules, scope, {})
+      return this(parse(expr), this.rules, scope, {})
     },
 
     'string, Object, Object': function (expr, scope, options) {
-      return simplify(parse(expr), simplify.rules, scope, options)
+      return this(parse(expr), this.rules, scope, options)
     },
 
     'string, Array': function (expr, rules) {
-      return simplify(parse(expr), rules, {}, {})
+      return this(parse(expr), rules, {}, {})
     },
 
     'string, Array, Object': function (expr, rules, scope) {
-      return simplify(parse(expr), rules, scope, {})
+      return this(parse(expr), rules, scope, {})
     },
 
     'string, Array, Object, Object': function (expr, rules, scope, options) {
-      return simplify(parse(expr), rules, scope, options)
+      return this(parse(expr), rules, scope, options)
     },
 
     'Node, Object': function (expr, scope) {
-      return simplify(expr, simplify.rules, scope, {})
+      return this(expr, this.rules, scope, {})
     },
 
     'Node, Object, Object': function (expr, scope, options) {
-      return simplify(expr, simplify.rules, scope, options)
+      return this(expr, this.rules, scope, options)
     },
 
     Node: function (expr) {
-      return simplify(expr, simplify.rules, {}, {})
+      return this(expr, this.rules, {}, {})
     },
 
     'Node, Array': function (expr, rules) {
-      return simplify(expr, rules, {}, {})
+      return this(expr, rules, {}, {})
     },
 
     'Node, Array, Object': function (expr, rules, scope) {
-      return simplify(expr, rules, scope, {})
+      return this(expr, rules, scope, {})
     },
 
     'Node, Array, Object, Object': function (expr, rules, scope, options) {
@@ -317,7 +320,9 @@ export const createSimplify = /* #__PURE__ */ factory(name, dependencies, (
     // { l: '(n1/n2)/n3', r: 'n1/(n2*n3)' },
     // { l: '(n*n1)/(n*n2)', r: 'n1/n2' },
 
-    { l: '1*n', r: 'n' } // this pattern can be produced by simplifyConstant
+    { l: '1*n', r: 'n' }, // this pattern can be produced by simplifyConstant
+
+    { l: 'n1/(n2/n3)', r: '(n1*n3)/n2' }
 
   ]
 
@@ -508,16 +513,21 @@ export const createSimplify = /* #__PURE__ */ factory(name, dependencies, (
 
     // Placeholders with the same key must match exactly
     for (const key in match1.placeholders) {
-      res.placeholders[key] = match1.placeholders[key]
-      if (hasOwnProperty(match2.placeholders, key)) {
-        if (!_exactMatch(match1.placeholders[key], match2.placeholders[key])) {
-          return null
+      if (hasOwnProperty(match1.placeholders, key)) {
+        res.placeholders[key] = match1.placeholders[key]
+
+        if (hasOwnProperty(match2.placeholders, key)) {
+          if (!_exactMatch(match1.placeholders[key], match2.placeholders[key])) {
+            return null
+          }
         }
       }
     }
 
     for (const key in match2.placeholders) {
-      res.placeholders[key] = match2.placeholders[key]
+      if (hasOwnProperty(match2.placeholders, key)) {
+        res.placeholders[key] = match2.placeholders[key]
+      }
     }
 
     return res

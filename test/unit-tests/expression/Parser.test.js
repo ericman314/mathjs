@@ -2,8 +2,8 @@
 
 import assert from 'assert'
 
-import approx from '../../../tools/approx'
-import math from '../../../src/bundleAny'
+import approx from '../../../tools/approx.js'
+import math from '../../../src/defaultInstance.js'
 const Parser = math.Parser
 
 describe('parser', function () {
@@ -20,18 +20,6 @@ describe('parser', function () {
   it('should have a property type', function () {
     const a = new Parser()
     assert.strictEqual(a.type, 'Parser')
-  })
-
-  it('should throw an error when using deprecated function parse', function () {
-    const parser = new Parser()
-
-    assert.throws(function () { parser.parse('2 + 3') }, /is deprecated/)
-  })
-
-  it('should throw an error when using deprecated function compile', function () {
-    const parser = new Parser()
-
-    assert.throws(function () { parser.compile('2 + 3') }, /is deprecated/)
   })
 
   it('should evaluate an expression', function () {

@@ -1,10 +1,10 @@
-import { createAlgorithm02 } from '../../type/matrix/utils/algorithm02'
-import { createAlgorithm11 } from '../../type/matrix/utils/algorithm11'
-import { createAlgorithm13 } from '../../type/matrix/utils/algorithm13'
-import { createAlgorithm14 } from '../../type/matrix/utils/algorithm14'
-import { createAlgorithm06 } from '../../type/matrix/utils/algorithm06'
-import { factory } from '../../utils/factory'
-import { andNumber } from '../../plain/number'
+import { createAlgorithm02 } from '../../type/matrix/utils/algorithm02.js'
+import { createAlgorithm11 } from '../../type/matrix/utils/algorithm11.js'
+import { createAlgorithm13 } from '../../type/matrix/utils/algorithm13.js'
+import { createAlgorithm14 } from '../../type/matrix/utils/algorithm14.js'
+import { createAlgorithm06 } from '../../type/matrix/utils/algorithm06.js'
+import { factory } from '../../utils/factory.js'
+import { andNumber } from '../../plain/number/index.js'
 
 const name = 'and'
 const dependencies = [
@@ -50,7 +50,7 @@ export const createAnd = /* #__PURE__ */ factory(name, dependencies, ({ typed, m
    * @return {boolean | Array | Matrix}
    *            Returns true when both inputs are defined with a nonzero/nonempty value.
    */
-  const and = typed(name, {
+  return typed(name, {
 
     'number, number': andNumber,
 
@@ -63,38 +63,38 @@ export const createAnd = /* #__PURE__ */ factory(name, dependencies, ({ typed, m
     },
 
     'Unit, Unit': function (x, y) {
-      return and(x.value || 0, y.value || 0)
+      return this(x.value || 0, y.value || 0)
     },
 
     'SparseMatrix, SparseMatrix': function (x, y) {
-      return algorithm06(x, y, and, false)
+      return algorithm06(x, y, this, false)
     },
 
     'SparseMatrix, DenseMatrix': function (x, y) {
-      return algorithm02(y, x, and, true)
+      return algorithm02(y, x, this, true)
     },
 
     'DenseMatrix, SparseMatrix': function (x, y) {
-      return algorithm02(x, y, and, false)
+      return algorithm02(x, y, this, false)
     },
 
     'DenseMatrix, DenseMatrix': function (x, y) {
-      return algorithm13(x, y, and)
+      return algorithm13(x, y, this)
     },
 
     'Array, Array': function (x, y) {
       // use matrix implementation
-      return and(matrix(x), matrix(y)).valueOf()
+      return this(matrix(x), matrix(y)).valueOf()
     },
 
     'Array, Matrix': function (x, y) {
       // use matrix implementation
-      return and(matrix(x), y)
+      return this(matrix(x), y)
     },
 
     'Matrix, Array': function (x, y) {
       // use matrix implementation
-      return and(x, matrix(y))
+      return this(x, matrix(y))
     },
 
     'SparseMatrix, any': function (x, y) {
@@ -103,7 +103,7 @@ export const createAnd = /* #__PURE__ */ factory(name, dependencies, ({ typed, m
         // return zero matrix
         return zeros(x.size(), x.storage())
       }
-      return algorithm11(x, y, and, false)
+      return algorithm11(x, y, this, false)
     },
 
     'DenseMatrix, any': function (x, y) {
@@ -112,7 +112,7 @@ export const createAnd = /* #__PURE__ */ factory(name, dependencies, ({ typed, m
         // return zero matrix
         return zeros(x.size(), x.storage())
       }
-      return algorithm14(x, y, and, false)
+      return algorithm14(x, y, this, false)
     },
 
     'any, SparseMatrix': function (x, y) {
@@ -121,7 +121,7 @@ export const createAnd = /* #__PURE__ */ factory(name, dependencies, ({ typed, m
         // return zero matrix
         return zeros(x.size(), x.storage())
       }
-      return algorithm11(y, x, and, true)
+      return algorithm11(y, x, this, true)
     },
 
     'any, DenseMatrix': function (x, y) {
@@ -130,19 +130,17 @@ export const createAnd = /* #__PURE__ */ factory(name, dependencies, ({ typed, m
         // return zero matrix
         return zeros(x.size(), x.storage())
       }
-      return algorithm14(y, x, and, true)
+      return algorithm14(y, x, this, true)
     },
 
     'Array, any': function (x, y) {
       // use matrix implementation
-      return and(matrix(x), y).valueOf()
+      return this(matrix(x), y).valueOf()
     },
 
     'any, Array': function (x, y) {
       // use matrix implementation
-      return and(x, matrix(y)).valueOf()
+      return this(x, matrix(y)).valueOf()
     }
   })
-
-  return and
 })

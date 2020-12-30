@@ -1,5 +1,5 @@
-import { format as formatString } from '../../utils/string'
-import { factory } from '../../utils/factory'
+import { format as formatString } from '../../utils/string.js'
+import { factory } from '../../utils/factory.js'
 
 const name = 'format'
 const dependencies = ['typed']
@@ -30,7 +30,8 @@ export const createFormat = /* #__PURE__ */ factory(name, dependencies, ({ typed
    *        Always use exponential notation.
    *        For example '1.234e+2' and '1.4e+7'
    *      - 'engineering'
-   *        Always use engineering notation.
+   *        Always use engineering notation: always have exponential notation,
+   *        and select the exponent to be a multiple of 3.
    *        For example '123.4e+0' and '14.0e+6'
    *      - 'auto' (default)
    *        Regular number notation for numbers having an absolute value between

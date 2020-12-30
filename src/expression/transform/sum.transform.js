@@ -1,7 +1,7 @@
-import { isBigNumber, isCollection, isNumber } from '../../utils/is'
-import { factory } from '../../utils/factory'
-import { errorTransform } from './utils/errorTransform'
-import { createSum } from '../../function/statistics/sum'
+import { isBigNumber, isCollection, isNumber } from '../../utils/is.js'
+import { factory } from '../../utils/factory.js'
+import { errorTransform } from './utils/errorTransform.js'
+import { createSum } from '../../function/statistics/sum.js'
 
 /**
  * Attach a transform function to math.sum
@@ -11,10 +11,10 @@ import { createSum } from '../../function/statistics/sum'
  * from one-based to zero based
  */
 const name = 'sum'
-const dependencies = ['typed', 'config', 'add', '?bignumber', '?fraction']
+const dependencies = ['typed', 'config', 'add', 'numeric']
 
-export const createSumTransform = /* #__PURE__ */ factory(name, dependencies, ({ typed, config, add, bignumber, fraction }) => {
-  const sum = createSum({ typed, config, add, bignumber, fraction })
+export const createSumTransform = /* #__PURE__ */ factory(name, dependencies, ({ typed, config, add, numeric }) => {
+  const sum = createSum({ typed, config, add, numeric })
 
   return typed(name, {
     '...any': function (args) {

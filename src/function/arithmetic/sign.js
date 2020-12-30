@@ -1,6 +1,6 @@
-import { factory } from '../../utils/factory'
-import { deepMap } from '../../utils/collection'
-import { signNumber } from '../../plain/number'
+import { factory } from '../../utils/factory.js'
+import { deepMap } from '../../utils/collection.js'
+import { signNumber } from '../../plain/number/index.js'
 
 const name = 'sign'
 const dependencies = ['typed', 'BigNumber', 'Fraction', 'complex']
@@ -36,7 +36,7 @@ export const createSign = /* #__PURE__ */ factory(name, dependencies, ({ typed, 
    * @return {number | BigNumber | Fraction | Complex | Array | Matrix | Unit}e
    *            The sign of `x`
    */
-  const sign = typed(name, {
+  return typed(name, {
     number: signNumber,
 
     Complex: function (x) {
@@ -53,13 +53,11 @@ export const createSign = /* #__PURE__ */ factory(name, dependencies, ({ typed, 
 
     'Array | Matrix': function (x) {
       // deep map collection, skip zeros since sign(0) = 0
-      return deepMap(x, sign, true)
+      return deepMap(x, this, true)
     },
 
     Unit: function (x) {
-      return sign(x.value)
+      return this(x.value)
     }
   })
-
-  return sign
 })

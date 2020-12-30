@@ -1,7 +1,7 @@
-import { bitNotBigNumber } from '../../utils/bignumber/bitwise'
-import { deepMap } from '../../utils/collection'
-import { factory } from '../../utils/factory'
-import { bitNotNumber } from '../../plain/number'
+import { bitNotBigNumber } from '../../utils/bignumber/bitwise.js'
+import { deepMap } from '../../utils/collection.js'
+import { factory } from '../../utils/factory.js'
+import { bitNotNumber } from '../../plain/number/index.js'
 
 const name = 'bitNot'
 const dependencies = ['typed']
@@ -29,15 +29,13 @@ export const createBitNot = /* #__PURE__ */ factory(name, dependencies, ({ typed
    * @param  {number | BigNumber | Array | Matrix} x Value to not
    * @return {number | BigNumber | Array | Matrix} NOT of `x`
    */
-  const bitNot = typed(name, {
+  return typed(name, {
     number: bitNotNumber,
 
     BigNumber: bitNotBigNumber,
 
     'Array | Matrix': function (x) {
-      return deepMap(x, bitNot)
+      return deepMap(x, this)
     }
   })
-
-  return bitNot
 })

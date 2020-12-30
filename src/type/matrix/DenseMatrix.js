@@ -1,10 +1,10 @@
-import { isArray, isBigNumber, isIndex, isMatrix, isNumber, isString, typeOf } from '../../utils/is'
-import { arraySize, getArrayDataType, reshape, resize, unsqueeze, validate, validateIndex } from '../../utils/array'
-import { format } from '../../utils/string'
-import { isInteger } from '../../utils/number'
-import { clone, deepStrictEqual } from '../../utils/object'
-import { DimensionError } from '../../error/DimensionError'
-import { factory } from '../../utils/factory'
+import { isArray, isBigNumber, isCollection, isIndex, isMatrix, isNumber, isString, typeOf } from '../../utils/is.js'
+import { arraySize, getArrayDataType, reshape, resize, unsqueeze, validate, validateIndex } from '../../utils/array.js'
+import { format } from '../../utils/string.js'
+import { isInteger } from '../../utils/number.js'
+import { clone, deepStrictEqual } from '../../utils/object.js'
+import { DimensionError } from '../../error/DimensionError.js'
+import { factory } from '../../utils/factory.js'
 
 const name = 'DenseMatrix'
 const dependencies = [
@@ -37,6 +37,8 @@ export const createDenseMatrixClass = /* #__PURE__ */ factory(name, dependencies
       // initialize fields from JSON representation
       this._data = data.data
       this._size = data.size
+      // verify the dimensions of the array
+      validate(this._data, this._size)
       this._datatype = datatype || data.datatype
     } else if (isArray(data)) {
       // replace nested Matrices with Arrays
@@ -393,7 +395,7 @@ export const createDenseMatrixClass = /* #__PURE__ */ factory(name, dependencies
    * `copy=true`, otherwise return the matrix itself (resize in place).
    *
    * @memberof DenseMatrix
-   * @param {number[]} size           The new size the matrix should have.
+   * @param {number[] || Matrix} size The new size the matrix should have.
    * @param {*} [defaultValue=0]      Default value, filled in on new entries.
    *                                  If not provided, the matrix elements will
    *                                  be filled with zeros.
@@ -403,12 +405,21 @@ export const createDenseMatrixClass = /* #__PURE__ */ factory(name, dependencies
    */
   DenseMatrix.prototype.resize = function (size, defaultValue, copy) {
     // validate arguments
-    if (!isArray(size)) { throw new TypeError('Array expected') }
+    if (!isCollection(size)) {
+      throw new TypeError('Array or Matrix expected')
+    }
+
+    // SparseMatrix input is always 2d, flatten this into 1d if it's indeed a vector
+    const sizeArray = size.valueOf().map(value => {
+      return Array.isArray(value) && value.length === 1
+        ? value[0]
+        : value
+    })
 
     // matrix to resize
     const m = copy ? this.clone() : this
     // resize matrix
-    return _resize(m, size, defaultValue)
+    return _resize(m, sizeArray, defaultValue)
   }
 
   function _resize (matrix, size, defaultValue) {
@@ -531,12 +542,14 @@ export const createDenseMatrixClass = /* #__PURE__ */ factory(name, dependencies
         return callback(value, index, me)
       }
     }
-    // return dense format
-    return new DenseMatrix({
-      data: recurse(this._data, []),
-      size: clone(this._size),
-      datatype: this._datatype
-    })
+
+    // determine the new datatype when the original matrix has datatype defined
+    // TODO: should be done in matrix constructor instead
+    const data = recurse(this._data, [])
+    const datatype = this._datatype !== undefined
+      ? getArrayDataType(data, typeOf)
+      : undefined
+    return new DenseMatrix(data, datatype)
   }
 
   /**

@@ -1,9 +1,9 @@
-import { factory } from '../../utils/factory'
-import { createAlgorithm03 } from '../../type/matrix/utils/algorithm03'
-import { createAlgorithm07 } from '../../type/matrix/utils/algorithm07'
-import { createAlgorithm12 } from '../../type/matrix/utils/algorithm12'
-import { createAlgorithm14 } from '../../type/matrix/utils/algorithm14'
-import { createAlgorithm13 } from '../../type/matrix/utils/algorithm13'
+import { factory } from '../../utils/factory.js'
+import { createAlgorithm03 } from '../../type/matrix/utils/algorithm03.js'
+import { createAlgorithm07 } from '../../type/matrix/utils/algorithm07.js'
+import { createAlgorithm12 } from '../../type/matrix/utils/algorithm12.js'
+import { createAlgorithm14 } from '../../type/matrix/utils/algorithm14.js'
+import { createAlgorithm13 } from '../../type/matrix/utils/algorithm13.js'
 
 const name = 'unequal'
 const dependencies = [
@@ -64,7 +64,7 @@ export const createUnequal = /* #__PURE__ */ factory(name, dependencies, ({ type
    * @param  {number | BigNumber | Fraction | boolean | Complex | Unit | string | Array | Matrix | undefined} y Second value to compare
    * @return {boolean | Array | Matrix} Returns true when the compared values are unequal, else returns false
    */
-  const unequal = typed('unequal', {
+  return typed('unequal', {
 
     'any, any': function (x, y) {
       // strict equality for null and undefined?
@@ -94,17 +94,17 @@ export const createUnequal = /* #__PURE__ */ factory(name, dependencies, ({ type
 
     'Array, Array': function (x, y) {
       // use matrix implementation
-      return unequal(matrix(x), matrix(y)).valueOf()
+      return this(matrix(x), matrix(y)).valueOf()
     },
 
     'Array, Matrix': function (x, y) {
       // use matrix implementation
-      return unequal(matrix(x), y)
+      return this(matrix(x), y)
     },
 
     'Matrix, Array': function (x, y) {
       // use matrix implementation
-      return unequal(x, matrix(y))
+      return this(x, matrix(y))
     },
 
     'SparseMatrix, any': function (x, y) {
@@ -137,8 +137,6 @@ export const createUnequal = /* #__PURE__ */ factory(name, dependencies, ({ type
   function _unequal (x, y) {
     return !equalScalar(x, y)
   }
-
-  return unequal
 })
 
 export const createUnequalNumber = factory(name, ['typed', 'equalScalar'], ({ typed, equalScalar }) => {

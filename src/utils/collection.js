@@ -1,6 +1,6 @@
-import { isCollection, isMatrix } from './is'
-import { IndexError } from '../error/IndexError'
-import { arraySize } from './array'
+import { isCollection, isMatrix } from './is.js'
+import { IndexError } from '../error/IndexError.js'
+import { arraySize } from './array.js'
 
 /**
  * Test whether an array contains collections
@@ -143,13 +143,11 @@ function _switch (mat) {
 }
 
 // TODO: document function scatter
-export function scatter (a, j, w, x, u, mark, c, f, inverse, update, value) {
+export function scatter (a, j, w, x, u, mark, cindex, f, inverse, update, value) {
   // a arrays
   const avalues = a._values
   const aindex = a._index
   const aptr = a._ptr
-  // c arrays
-  const cindex = c._index
 
   // vars
   let k, k0, k1, i

@@ -1,7 +1,7 @@
 // test SymbolNode
 import assert from 'assert'
 
-import math from '../../../../src/bundleAny'
+import math from '../../../../src/defaultInstance.js'
 const Node = math.Node
 const ConstantNode = math.ConstantNode
 const SymbolNode = math.SymbolNode
@@ -69,6 +69,7 @@ describe('SymbolNode', function () {
     const a = new SymbolNode('a')
     const b = a.map(function () {
       assert.ok(false, 'should not execute, symbol has no childs')
+      return undefined
     })
 
     assert.notStrictEqual(b, a)
@@ -150,9 +151,8 @@ describe('SymbolNode', function () {
   })
 
   it('should LaTeX a SymbolNode', function () {
-    const s = new SymbolNode('foo')
-
-    assert.strictEqual(s.toTex(), ' foo')
+    assert.strictEqual(new SymbolNode('foo').toTex(), ' foo')
+    assert.strictEqual(new SymbolNode('Infinity').toTex(), '\\infty')
   })
 
   it('should LaTeX a SymbolNode with custom toTex', function () {

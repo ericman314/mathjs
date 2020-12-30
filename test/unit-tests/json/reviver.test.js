@@ -1,5 +1,5 @@
 import assert from 'assert'
-import math from '../../../src/bundleAny'
+import math from '../../../src/defaultInstance.js'
 const reviver = math.reviver
 const Range = math.Range
 
@@ -8,6 +8,14 @@ describe('reviver', function () {
     const json = '{"foo":[1,2,3],"bar":null,"baz":"str"}'
     const data = { foo: [1, 2, 3], bar: null, baz: 'str' }
     assert.deepStrictEqual(JSON.parse(json, reviver), data)
+  })
+
+  it('should parse a stringified numbers', function () {
+    assert.strictEqual(JSON.parse('2.3', reviver), 2.3)
+    assert.strictEqual(JSON.parse('{"mathjs":"number","value":"2.3"}', reviver), 2.3)
+    assert.strictEqual(JSON.parse('{"mathjs":"number","value":"Infinity"}', reviver), Infinity)
+    assert.strictEqual(JSON.parse('{"mathjs":"number","value":"-Infinity"}', reviver), -Infinity)
+    assert(isNaN(JSON.parse('{"mathjs":"number","value":"NaN"}', reviver)))
   })
 
   it('should parse a stringified complex number', function () {

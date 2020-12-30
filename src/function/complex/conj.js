@@ -1,5 +1,5 @@
-import { factory } from '../../utils/factory'
-import { deepMap } from '../../utils/collection'
+import { factory } from '../../utils/factory.js'
+import { deepMap } from '../../utils/collection.js'
 
 const name = 'conj'
 const dependencies = ['typed']
@@ -30,7 +30,7 @@ export const createConj = /* #__PURE__ */ factory(name, dependencies, ({ typed }
    * @return {number | BigNumber | Complex | Array | Matrix}
    *            The complex conjugate of x
    */
-  const conj = typed(name, {
+  return typed(name, {
     number: function (x) {
       return x
     },
@@ -44,9 +44,7 @@ export const createConj = /* #__PURE__ */ factory(name, dependencies, ({ typed }
     },
 
     'Array | Matrix': function (x) {
-      return deepMap(x, conj)
+      return deepMap(x, this)
     }
   })
-
-  return conj
 })

@@ -1,4 +1,4 @@
-import { factory } from '../../../utils/factory'
+import { factory } from '../../../utils/factory.js'
 
 const name = 'algorithm11'
 const dependencies = ['typed', 'equalScalar']
@@ -65,14 +65,6 @@ export const createAlgorithm11 = /* #__PURE__ */ factory(name, dependencies, ({ 
     const cvalues = []
     const cindex = []
     const cptr = []
-    // matrix
-    const c = s.createSparseMatrix({
-      values: cvalues,
-      index: cindex,
-      ptr: cptr,
-      size: [rows, columns],
-      datatype: dt
-    })
 
     // loop columns
     for (let j = 0; j < columns; j++) {
@@ -96,6 +88,12 @@ export const createAlgorithm11 = /* #__PURE__ */ factory(name, dependencies, ({ 
     cptr[columns] = cindex.length
 
     // return sparse matrix
-    return c
+    return s.createSparseMatrix({
+      values: cvalues,
+      index: cindex,
+      ptr: cptr,
+      size: [rows, columns],
+      datatype: dt
+    })
   }
 })

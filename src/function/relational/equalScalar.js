@@ -1,7 +1,7 @@
-import { nearlyEqual as bigNearlyEqual } from '../../utils/bignumber/nearlyEqual'
-import { nearlyEqual } from '../../utils/number'
-import { factory } from '../../utils/factory'
-import { complexEquals } from '../../utils/complex'
+import { nearlyEqual as bigNearlyEqual } from '../../utils/bignumber/nearlyEqual.js'
+import { nearlyEqual } from '../../utils/number.js'
+import { factory } from '../../utils/factory.js'
+import { complexEquals } from '../../utils/complex.js'
 
 const name = 'equalScalar'
 const dependencies = ['typed', 'config']
@@ -15,7 +15,7 @@ export const createEqualScalar = /* #__PURE__ */ factory(name, dependencies, ({ 
    * @return {boolean}                                                  Returns true when the compared values are equal, else returns false
    * @private
    */
-  const equalScalar = typed(name, {
+  return typed(name, {
 
     'boolean, boolean': function (x, y) {
       return x === y
@@ -41,11 +41,9 @@ export const createEqualScalar = /* #__PURE__ */ factory(name, dependencies, ({ 
       if (!x.equalBase(y)) {
         throw new Error('Cannot compare units with different base')
       }
-      return equalScalar(x.value, y.value)
+      return this(x.value, y.value)
     }
   })
-
-  return equalScalar
 })
 
 export const createEqualScalarNumber = factory(name, ['typed', 'config'], ({ typed, config }) => {

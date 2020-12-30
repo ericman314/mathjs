@@ -1,9 +1,8 @@
-import { isNode } from '../../utils/is'
+import { isNode } from '../../utils/is.js'
 
-import { keywords } from '../keywords'
-import { deepStrictEqual, hasOwnProperty } from '../../utils/object'
-import { factory } from '../../utils/factory'
-import { warnOnce } from '../../utils/log'
+import { keywords } from '../keywords.js'
+import { deepStrictEqual, hasOwnProperty } from '../../utils/object.js'
+import { factory } from '../../utils/factory.js'
 
 const name = 'Node'
 const dependencies = ['mathWithTransform']
@@ -25,18 +24,6 @@ export const createNode = /* #__PURE__ */ factory(name, dependencies, ({ mathWit
    */
   Node.prototype.evaluate = function (scope) {
     return this.compile().evaluate(scope)
-  }
-
-  /**
-   * Evaluate the node
-   * @param {Object} [scope]  Scope to read/write variables
-   * @return {*}              Returns the result
-   */
-  // TODO: Deprecated since v6.0.0. Clean up some day
-  Node.prototype.eval = function (scope) {
-    warnOnce('Method Node.eval is renamed to Node.evaluate. Please use the new method name.')
-
-    return this.evaluate(scope)
   }
 
   Node.prototype.type = 'Node'
@@ -65,14 +52,7 @@ export const createNode = /* #__PURE__ */ factory(name, dependencies, ({ mathWit
     }
 
     return {
-      evaluate,
-
-      // TODO: Deprecated since v6.0.0. Clean up some day
-      eval: function deprecatedEval (scope) {
-        warnOnce('Method eval is renamed to evaluate. Please use the new method.')
-
-        return evaluate(scope)
-      }
+      evaluate
     }
   }
 
@@ -135,7 +115,8 @@ export const createNode = /* #__PURE__ */ factory(name, dependencies, ({ mathWit
    */
   Node.prototype.traverse = function (callback) {
     // execute callback for itself
-    callback(this, null, null) // eslint-disable-line standard/no-callback-literal
+    // eslint-disable-next-line
+    callback(this, null, null)
 
     // recursively traverse over all childs of a node
     function _traverse (node, callback) {
@@ -208,16 +189,6 @@ export const createNode = /* #__PURE__ */ factory(name, dependencies, ({ mathWit
     })
 
     return nodes
-  }
-
-  // TODO: deprecated since version 1.1.0, remove this some day
-  Node.prototype.find = function () {
-    throw new Error('Function Node.find is deprecated. Use Node.filter instead.')
-  }
-
-  // TODO: deprecated since version 1.1.0, remove this some day
-  Node.prototype.match = function () {
-    throw new Error('Function Node.match is deprecated. See functions Node.filter, Node.transform, Node.traverse.')
   }
 
   /**

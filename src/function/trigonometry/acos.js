@@ -1,5 +1,5 @@
-import { factory } from '../../utils/factory'
-import { deepMap } from '../../utils/collection'
+import { factory } from '../../utils/factory.js'
+import { deepMap } from '../../utils/collection.js'
 
 const name = 'acos'
 const dependencies = ['typed', 'config', 'Complex']
@@ -28,7 +28,7 @@ export const createAcos = /* #__PURE__ */ factory(name, dependencies, ({ typed, 
    * @param {number | BigNumber | Complex | Array | Matrix} x  Function input
    * @return {number | BigNumber | Complex | Array | Matrix} The arc cosine of x
    */
-  const acos = typed(name, {
+  return typed(name, {
     number: function (x) {
       if ((x >= -1 && x <= 1) || config.predictable) {
         return Math.acos(x)
@@ -46,9 +46,7 @@ export const createAcos = /* #__PURE__ */ factory(name, dependencies, ({ typed, 
     },
 
     'Array | Matrix': function (x) {
-      return deepMap(x, acos)
+      return deepMap(x, this)
     }
   })
-
-  return acos
 })

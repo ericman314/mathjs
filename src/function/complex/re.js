@@ -1,5 +1,5 @@
-import { factory } from '../../utils/factory'
-import { deepMap } from '../../utils/collection'
+import { factory } from '../../utils/factory.js'
+import { deepMap } from '../../utils/collection.js'
 
 const name = 're'
 const dependencies = ['typed']
@@ -32,7 +32,7 @@ export const createRe = /* #__PURE__ */ factory(name, dependencies, ({ typed }) 
    *            A complex number or array with complex numbers
    * @return {number | BigNumber | Array | Matrix} The real part of x
    */
-  const re = typed(name, {
+  return typed(name, {
     number: function (x) {
       return x
     },
@@ -46,9 +46,7 @@ export const createRe = /* #__PURE__ */ factory(name, dependencies, ({ typed }) 
     },
 
     'Array | Matrix': function (x) {
-      return deepMap(x, re)
+      return deepMap(x, this)
     }
   })
-
-  return re
 })
